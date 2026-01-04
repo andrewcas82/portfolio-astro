@@ -1,0 +1,124 @@
+---
+/**
+ * BaseLayout.astro
+ * Layout global: SEO básico + Header/Footer + contenedor + slot principal.
+ *
+ * Uso:
+ * <BaseLayout title="..." description="...">
+ *   ...contenido...
+ * </BaseLayout>
+ */
+
+import Header from "./Header.astro";
+import Footer from "./Footer.astro";
+
+type Props = {
+  title: string;
+  description?: string;
+  canonical?: string;
+  ogImage?: string;
+  noindex?: boolean;
+};
+
+const {
+  title,
+  description = "Professional portfolio website.",
+  canonical,
+  ogImage,
+  noindex = false,
+} = Astro.props;
+
+// URL base del sitio (usa Astro.site si está configurado en astro.config.mjs)
+const siteUrl = Astro.site ? new URL(Astro.site) : new URL("http://localhost:4321");
+
+// Canonical final: si no te lo pasan, usa la URL actual
+const canonicalUrl = canonical
+  ? new URL(canonical, siteUrl).toString()
+  : new URL(Astro.url.pathname, siteUrl).toString();
+
+// OG image final: opcional (ideal: /images/og/default.png)
+const ogImageUrl = ogImage ? new URL(ogImage, siteUrl).toString() : undefined;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+
+    {noindex ? <meta name="robots" content="noindex, nofollow" /> : null}
+
+    <!-- OpenGraph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    {ogImageUrl ? <meta property="og:image" content={ogImageUrl} /> : null}
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content={ogImageUrl ? "summary_large_image" : "summary"} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogImageUrl ? <meta name="twitter:image" content={ogImageUrl} /> : null}
+
+    <!-- (Opcional) Favicon: asegúrate de tenerlo en /public -->
+    <link rel="icon" href="/favicon.svg" />
+
+    <!-- Global styles -->
+    <style>
+      :root {
+        color-scheme: light;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        line-height: 1.5;
+        background: #fff;
+        color: #111;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .page {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      main {
+        flex: 1;
+      }
+
+      .content {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 28px 18px 40px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="page">
+      <Header />
+
+      <main id="main-content">
+        <div class="content">
+          <slot />
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  </body>
+</html>

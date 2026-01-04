@@ -1,0 +1,129 @@
+---
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+const projects = await getCollection("projects");
+
+// Orden básico: por startDate desc si existe, si no por title
+projects.sort((a, b) => {
+  const ad = a.data.startDate ? Date.parse(a.data.startDate) : 0;
+  const bd = b.data.startDate ? Date.parse(b.data.startDate) : 0;
+  if (bd !== ad) return bd - ad;
+  return a.data.title.localeCompare(b.data.title);
+});
+---
+
+<BaseLayout
+  title="Projects — Andrés Castrillón"
+  description="Selected software, XR, and aviation-related engineering projects with stack and outcomes."
+>
+  <section class="page">
+    <header class="page-header">
+      <h1>Projects</h1>
+      <p class="muted">
+        A curated selection of projects. Open a project to see context, solution approach, and results.
+      </p>
+    </header>
+
+    <div class="grid" role="list">
+      {projects.map((p) => (
+        <article class="card" role="listitem">
+          <div class="card-head">
+            <h2 class="card-title">
+              <a class="card-link" href={`/projects/${p.data.slug}/`}>{p.data.title}</a>
+            </h2>
+
+            {p.data.status ? (
+              <span class="badge" aria-label={`Status: ${p.data.status}`}>{p.data.status}</span>
+            ) : null}
+          </div>
+
+          <p class="card-summary">{p.data.summary}</p>
+
+          {p.data.stack?.length ? (
+            <ul class="chips" aria-label="Tech stack">
+              {p.data.stack.slice(0, 6).map((s) => (
+                <li class="chip">{s}</li>
+              ))}
+            </ul>
+          ) : null}
+
+          {p.data.tags?.length ? (
+            <p class="tags" aria-label="Tags">
+              {p.data.tags.slice(0, 6).map((t) => (
+                <span class="tag">{t}</span>
+              ))}
+            </p>
+          ) : null}
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <style>
+    .page { display: grid; gap: 18px; }
+    .page-header h1 { margin: 0; font-size: 26px; }
+    .muted { margin: 8px 0 0; opacity: 0.8; max-width: 70ch; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid rgba(0,0,0,0.10);
+      border-radius: 14px;
+      padding: 14px;
+      background: white;
+      display: grid;
+      gap: 10px;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .card-title { margin: 0; font-size: 16px; line-height: 1.25; }
+    .card-link { text-decoration: none; }
+    .card-link:hover { text-decoration: underline; }
+
+    .badge {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.12);
+      opacity: 0.85;
+      white-space: nowrap;
+    }
+
+    .card-summary { margin: 0; opacity: 0.9; }
+
+    .chips {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .chip {
+      font-size: 12px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.10);
+      opacity: 0.9;
+    }
+
+    .tags { margin: 0; display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag { font-size: 12px; opacity: 0.75; }
+
+    @media (max-width: 860px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</BaseLayout>

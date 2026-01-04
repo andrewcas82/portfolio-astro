@@ -1,0 +1,209 @@
+---
+import BaseLayout from "../../components/layout/BaseLayout.astro";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((p) => ({
+    params: { slug: p.data.slug },
+    props: { project: p },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await project.render();
+
+// SEO
+const title = `${project.data.title} — Project`;
+const description = project.data.summary;
+
+// Hero image (opcional): usa frontmatter images.hero si existe
+const ogImage = project.data.images?.hero ?? undefined;
+---
+
+<BaseLayout title={title} description={description} ogImage={ogImage}>
+  <article class="project">
+    <header class="header">
+      <div class="top">
+        <h1 class="title">{project.data.title}</h1>
+        {project.data.status ? (
+          <span class="badge" aria-label={`Status: ${project.data.status}`}>{project.data.status}</span>
+        ) : null}
+      </div>
+
+      <p class="summary">{project.data.summary}</p>
+
+      {(project.data.startDate || project.data.endDate || project.data.role) ? (
+        <dl class="meta" aria-label="Project meta">
+          {project.data.role ? (
+            <>
+              <dt>Role</dt>
+              <dd>{project.data.role}</dd>
+            </>
+          ) : null}
+
+          {project.data.startDate ? (
+            <>
+              <dt>Start</dt>
+              <dd>{project.data.startDate}</dd>
+            </>
+          ) : null}
+
+          {project.data.endDate ? (
+            <>
+              <dt>End</dt>
+              <dd>{project.data.endDate}</dd>
+            </>
+          ) : null}
+        </dl>
+      ) : null}
+
+      {project.data.stack?.length ? (
+        <section class="chips-block" aria-label="Tech stack">
+          <h2 class="subhead">Stack</h2>
+          <ul class="chips" role="list">
+            {project.data.stack.map((s) => (
+              <li class="chip">{s}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {project.data.highlights?.length ? (
+        <section class="highlights" aria-label="Highlights">
+          <h2 class="subhead">Highlights</h2>
+          <ul class="bullets">
+            {project.data.highlights.map((h) => (
+              <li>{h}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {project.data.links ? (
+        <section class="links" aria-label="Project links">
+          <h2 class="subhead">Links</h2>
+          <ul class="link-list" role="list">
+            {project.data.links.repo ? (
+              <li><a href={project.data.links.repo} target="_blank" rel="noreferrer">Repository</a></li>
+            ) : null}
+            {project.data.links.demo ? (
+              <li><a href={project.data.links.demo} target="_blank" rel="noreferrer">Demo</a></li>
+            ) : null}
+            {project.data.links.docs ? (
+              <li><a href={project.data.links.docs} target="_blank" rel="noreferrer">Docs</a></li>
+            ) : null}
+            {project.data.links.video ? (
+              <li><a href={project.data.links.video} target="_blank" rel="noreferrer">Video</a></li>
+            ) : null}
+          </ul>
+        </section>
+      ) : null}
+
+      {project.data.tags?.length ? (
+        <p class="tags" aria-label="Tags">
+          {project.data.tags.map((t) => (
+            <span class="tag">{t}</span>
+          ))}
+        </p>
+      ) : null}
+    </header>
+
+    <hr class="divider" />
+
+    <section class="content" aria-label="Project content">
+      <Content />
+    </section>
+
+    <nav class="back">
+      <a href="/projects">← Back to Projects</a>
+    </nav>
+  </article>
+
+  <style>
+    .project { display: grid; gap: 16px; }
+
+    .header { display: grid; gap: 12px; }
+    .top { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
+    .title { margin: 0; font-size: 28px; letter-spacing: -0.02em; line-height: 1.15; }
+
+    .badge {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.12);
+      opacity: 0.85;
+      white-space: nowrap;
+    }
+
+    .summary { margin: 0; opacity: 0.9; max-width: 80ch; }
+
+    .meta {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 6px 14px;
+      margin: 0;
+      max-width: 620px;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    .meta dt { font-weight: 700; }
+    .meta dd { margin: 0; }
+
+    .subhead { margin: 0 0 8px; font-size: 14px; opacity: 0.85; }
+
+    .chips-block { margin-top: 4px; }
+    .chips {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      font-size: 12px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.10);
+      opacity: 0.9;
+    }
+
+    .highlights { margin-top: 6px; }
+    .bullets { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+
+    .links .link-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .links a { text-decoration: none; border-bottom: 1px solid rgba(0,0,0,0.18); }
+    .links a:hover { border-bottom-color: rgba(0,0,0,0.45); }
+
+    .tags { margin: 0; display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag { font-size: 12px; opacity: 0.75; }
+
+    .divider { border: none; border-top: 1px solid rgba(0,0,0,0.08); margin: 4px 0 0; }
+
+    /* Markdown content defaults */
+    .content :global(h2) { margin: 18px 0 8px; font-size: 18px; }
+    .content :global(h3) { margin: 16px 0 8px; font-size: 16px; }
+    .content :global(p) { margin: 10px 0; max-width: 80ch; }
+    .content :global(ul) { margin: 10px 0; padding-left: 18px; }
+    .content :global(code) { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .content :global(pre) {
+      overflow: auto;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.10);
+      background: rgba(0,0,0,0.03);
+    }
+
+    .back { margin-top: 6px; }
+    .back a { text-decoration: none; opacity: 0.85; }
+    .back a:hover { opacity: 1; text-decoration: underline; }
+  </style>
+</BaseLayout>
