@@ -6,13 +6,17 @@ const projects = defineCollection({
     title: z.string(),
     slug: z.string(),
     summary: z.string(),
+
+    // Opcionales (para no romper tus MD actuales si no los tienen)
     role: z.string().optional(),
     stack: z.array(z.string()).default([]),
     highlights: z.array(z.string()).default([]),
     tags: z.array(z.string()).default([]),
+
     status: z.enum(["active", "completed", "archived"]).optional(),
     startDate: z.string().optional(),
     endDate: z.string().optional(),
+
     links: z
       .object({
         repo: z.string().url().optional(),
@@ -21,6 +25,7 @@ const projects = defineCollection({
         video: z.string().url().optional(),
       })
       .optional(),
+
     images: z
       .object({
         hero: z.string().optional(),
