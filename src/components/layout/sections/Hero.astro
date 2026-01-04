@@ -5,43 +5,19 @@
  * Nota: uso "as any" para evitar que el build falle si tu estructura exacta difiere.
  */
 
+
 import profile from "../../../data/profile";
 
-
-const p = profile as any;
-
-const name =
-  p?.name ??
-  p?.fullName ??
-  p?.basics?.name ??
-  "Your Name";
-
-const headline =
-  p?.headline ??
-  p?.title ??
-  p?.basics?.label ??
-  "Software Engineer";
-
-const summary =
-  p?.summary ??
-  p?.bio ??
-  p?.basics?.summary ??
-  p?.about ??
-  "";
-
-const location =
-  p?.location ??
-  p?.basics?.location?.city ??
-  p?.basics?.location ??
-  "";
-
-const email =
-  p?.email ??
-  p?.basics?.email ??
-  "";
+const name = profile.fullName;
+const headline = profile.headline;
+const summary = profile.summary;
+const location = profile.location ?? "";
+const email = profile.contact?.email ?? "";
 
 const ctaPrimaryHref = "/projects";
 const ctaSecondaryHref = "/contact";
+
+
 ---
 
 <section class="hero" aria-label="Hero section">
