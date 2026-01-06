@@ -1,6 +1,8 @@
 ---
 import BaseLayout from "../components/layout/BaseLayout.astro";
 import Hero from "../components/layout/sections/Hero.astro";
+import JsonLd from "../components/seo/JsonLd.astro";
+import profile from "../data/profile";
 ---
 
 <BaseLayout
@@ -8,5 +10,22 @@ import Hero from "../components/layout/sections/Hero.astro";
   description="Software Engineer, XR Developer, Aviation Maintenance, MBA & MBI. Projects, experience, and contact."
 >
   <Hero />
+
+  <JsonLd
+    schema={{
+      "@context": "https://schema.org",
+      "@type": "Person",
+      name: profile.fullName,
+      jobTitle: profile.headline,
+      url: profile.contact.website || undefined,
+      sameAs: [
+        profile.contact.github,
+        profile.contact.linkedin,
+      ].filter(Boolean),
+      email: profile.contact.email && profile.contact.email !== "YOUR_EMAIL_HERE"
+        ? `mailto:${profile.contact.email}`
+        : undefined,
+    }}
+  />
 </BaseLayout>
 

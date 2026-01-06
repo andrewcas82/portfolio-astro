@@ -1,0 +1,11 @@
+---
+type Props = {
+  schema: Record<string, any>;
+};
+
+const { schema } = Astro.props;
+---
+
+<script type="application/ld+json">
+  {JSON.stringify(schema)}
+</script>
