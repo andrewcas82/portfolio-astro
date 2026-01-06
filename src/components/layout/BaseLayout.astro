@@ -37,7 +37,7 @@ const canonicalUrl = canonical
   : new URL(Astro.url.pathname, siteUrl).toString();
 
 // OG image final: opcional (ideal: /images/og/default.png)
-const ogImageUrl = ogImage ? new URL(ogImage, siteUrl).toString() : undefined;
+const ogImageUrl = new URL(ogImage ?? "/images/og/default.jpg", siteUrl).toString();
 ---
 
 <!doctype html>
