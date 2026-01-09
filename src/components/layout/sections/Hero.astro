@@ -1,137 +1,134 @@
 ---
-/**
- * Hero.astro
- * Consume datos desde src/data/profile.ts.
- * Nota: uso "as any" para evitar que el build falle si tu estructura exacta difiere.
- */
-
-
 import profile from "../../../data/profile";
 
 const name = profile.fullName;
 const headline = profile.headline;
 const summary = profile.summary;
-const location = profile.location ?? "";
-const email = profile.contact?.email ?? "";
 
-const ctaPrimaryHref = "/projects";
-const ctaSecondaryHref = "/contact";
+const primaryCta = { label: "View Projects", href: "/projects" };
+const secondaryCta = { label: "Contact", href: "/contact" };
 
-
+const proof = [
+  { label: "XR", value: "Unity / OpenXR / XRI" },
+  { label: "Mobile", value: "Flutter (Android/iOS)" },
+  { label: "Domain", value: "Aviation maintenance & QC" },
+];
 ---
 
-<section class="hero" aria-label="Hero section">
-  <div class="stack">
+<section class="hero" aria-label="Hero">
+  <div class="intro">
     <p class="kicker">Portfolio</p>
     <h1 class="title">{name}</h1>
     <p class="headline">{headline}</p>
+    <p class="summary">{summary}</p>
 
-    {summary ? <p class="summary">{summary}</p> : null}
-
-    {(location || email) ? (
-      <div class="meta" aria-label="Quick info">
-        {location ? <span class="chip">{location}</span> : null}
-        {email ? <a class="chip link" href={`mailto:${email}`}>{email}</a> : null}
-      </div>
-    ) : null}
-
-    <div class="actions" aria-label="Primary actions">
-      <a class="btn primary" href={ctaPrimaryHref}>View Projects</a>
-      <a class="btn" href={ctaSecondaryHref}>Contact</a>
+    <div class="cta" role="group" aria-label="Primary actions">
+      <a class="btn primary" href={primaryCta.href}>{primaryCta.label}</a>
+      <a class="btn" href={secondaryCta.href}>{secondaryCta.label}</a>
     </div>
   </div>
-</section>
 
-<style>
-  .hero {
-    padding: 8px 0 12px;
-  }
+  <aside class="proof" aria-label="Proof points">
+    <h2 class="proofTitle">Focus</h2>
+    <dl class="proofGrid">
+      {proof.map((p) => (
+        <div class="proofItem">
+          <dt>{p.label}</dt>
+          <dd>{p.value}</dd>
+        </div>
+      ))}
+    </dl>
+  </aside>
 
-  .stack {
-    display: grid;
-    gap: 10px;
-    max-width: 860px;
-  }
-
-  .kicker {
-    margin: 0;
-    font-size: 12px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    opacity: 0.7;
-  }
-
-  .title {
-    margin: 0;
-    font-size: 36px;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-  }
-
-  .headline {
-    margin: 0;
-    font-size: 16px;
-    opacity: 0.85;
-  }
-
-  .summary {
-    margin: 6px 0 0;
-    font-size: 15px;
-    opacity: 0.9;
-  }
-
-  .meta {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 8px;
-  }
-
-  .chip {
-    display: inline-flex;
-    padding: 6px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(0, 0, 0, 0.10);
-    font-size: 13px;
-    opacity: 0.9;
-    text-decoration: none;
-  }
-
-  .chip.link:hover {
-    background: rgba(0, 0, 0, 0.04);
-  }
-
-  .actions {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-top: 10px;
-  }
-
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 14px;
-    border-radius: 10px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
-  }
-
-  .btn:hover {
-    background: rgba(0, 0, 0, 0.04);
-  }
-
-  .btn.primary {
-    border-color: rgba(0, 0, 0, 0.18);
-    background: rgba(0, 0, 0, 0.06);
-  }
-
-  @media (max-width: 520px) {
-    .title {
-      font-size: 30px;
+  <style>
+    .hero {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1.25fr 0.75fr;
+      align-items: start;
     }
-  }
-</style>
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; }
+    }
+
+    .kicker {
+      margin: 0;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    .title {
+      margin: 6px 0 0;
+      font-size: 40px;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+    }
+
+    .headline {
+      margin: 10px 0 0;
+      font-size: 16px;
+      opacity: 0.9;
+      max-width: 80ch;
+    }
+
+    .summary {
+      margin: 10px 0 0;
+      opacity: 0.85;
+      max-width: 90ch;
+    }
+
+    .cta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .btn {
+      text-decoration: none;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid rgba(0,0,0,0.12);
+      opacity: 0.92;
+    }
+    .btn:hover { opacity: 1; }
+    .primary {
+      border-color: rgba(0,0,0,0.18);
+      font-weight: 600;
+    }
+
+    .proof {
+      border: 1px solid rgba(0,0,0,0.10);
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .proofTitle {
+      margin: 0 0 10px;
+      font-size: 14px;
+      opacity: 0.8;
+    }
+
+    .proofGrid {
+      margin: 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .proofItem dt {
+      font-size: 12px;
+      opacity: 0.7;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .proofItem dd {
+      margin: 2px 0 0;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+  </style>
+</section>

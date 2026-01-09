@@ -3,29 +3,21 @@ import BaseLayout from "../components/layout/BaseLayout.astro";
 import Hero from "../components/layout/sections/Hero.astro";
 import JsonLd from "../components/seo/JsonLd.astro";
 import profile from "../data/profile";
+
+const title = `${profile.fullName} — Portfolio`;
+const description = profile.summary;
+
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: profile.fullName,
+  jobTitle: profile.headline,
+  url: profile.contact.website || undefined,
+  sameAs: [profile.contact.github, profile.contact.linkedin].filter(Boolean),
+};
 ---
 
-<BaseLayout
-  title="Andrés Castrillón — Portfolio"
-  description="Software Engineer, XR Developer, Aviation Maintenance, MBA & MBI. Projects, experience, and contact."
->
+<BaseLayout title={title} description={description}>
+  <JsonLd schema={personSchema} />
   <Hero />
-
-  <JsonLd
-    schema={{
-      "@context": "https://schema.org",
-      "@type": "Person",
-      name: profile.fullName,
-      jobTitle: profile.headline,
-      url: profile.contact.website || undefined,
-      sameAs: [
-        profile.contact.github,
-        profile.contact.linkedin,
-      ].filter(Boolean),
-      email: profile.contact.email && profile.contact.email !== "YOUR_EMAIL_HERE"
-        ? `mailto:${profile.contact.email}`
-        : undefined,
-    }}
-  />
 </BaseLayout>
-
