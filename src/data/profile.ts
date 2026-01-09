@@ -73,7 +73,7 @@ export const profile: Profile = {
     email: "c2developers@outlook.com",
     website: "https://andrescasportafolio.vercel.app/",
     github: "https://github.com/andrewcas82",
-    linkedin: "https://www.linkedin.com/in/YOUR_LINKEDIN",
+    linkedin: "https://www.linkedin.com/in/andres-castrillon-montoya-7a8bb8a5/",
   },
   highlights: [
     {
