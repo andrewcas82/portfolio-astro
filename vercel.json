@@ -1,0 +1,14 @@
+{
+  "redirects": [
+    {
+      "source": "/projects/xr-training-apk-unity-vuforia",
+      "destination": "/projects/xr-training-apk-unity",
+      "permanent": true
+    },
+    {
+      "source": "/projects/xr-training-apk-unity-vuforia/",
+      "destination": "/projects/xr-training-apk-unity/",
+      "permanent": true
+    }
+  ]
+}
