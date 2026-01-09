@@ -1,6 +1,8 @@
 ---
 import BaseLayout from "../../components/layout/BaseLayout.astro";
 import { getCollection } from "astro:content";
+import JsonLd from "../../components/seo/JsonLd.astro";
+
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
@@ -16,12 +18,43 @@ const { Content } = await project.render();
 // SEO
 const title = `${project.data.title} — Project`;
 const description = project.data.summary;
+const projectUrl = new URL(
+  `/projects/${project.data.slug}/`,
+  Astro.site
+).toString();
+
+const jsonLdSchema = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: project.data.title,
+  description: project.data.summary,
+  url: projectUrl,
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "Cross-platform",
+  keywords: [
+    ...(project.data.stack ?? []),
+    ...(project.data.tags ?? []),
+  ],
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  sameAs: [
+    project.data.links?.repo,
+    project.data.links?.demo,
+    project.data.links?.docs,
+    project.data.links?.video,
+  ].filter(Boolean),
+};
+
 
 // Hero image (opcional): usa frontmatter images.hero si existe
 const ogImage = project.data.images?.hero ?? undefined;
 ---
 
 <BaseLayout title={title} description={description} ogImage={ogImage}>
+  <JsonLd schema={jsonLdSchema} />
   <article class="project">
     <header class="header">
       <div class="top">

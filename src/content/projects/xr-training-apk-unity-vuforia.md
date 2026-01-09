@@ -2,6 +2,13 @@
 title: "XR Training APK (Unity C# + Vuforia)"
 slug: "xr-training-apk-unity-vuforia"
 summary: "Aplicación XR orientada a entrenamiento con Unity (C#) y Vuforia (opcional), enfocada en arquitectura modular y estabilidad para dispositivos tipo Quest."
+
+links:
+  repo: "https://github.com/andrewcas82/portfolio-astro"
+  demo: "https://andrescasportafolio.vercel.app/projects/mobile-web-apps-flutter-python-js/"
+  docs: "https://andrescasportafolio.vercel.app/"
+# video: ""
+
 role: "XR Developer / Software Engineer"
 status: "active"
 stack:
@@ -17,13 +24,9 @@ tags:
   - "VR"
   - "AR"
   - "Training"
-startDate: "YYYY-MM"
-endDate: ""
-links:
-  repo: ""
-  demo: ""
-  docs: ""
-  video: ""
+startDate: "2022-01"
+endDate: "2025-01"
+
 images:
   hero: "/images/projects/xr-training-apk-unity-vuforia/hero.jpg"
   gallery: []

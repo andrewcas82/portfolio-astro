@@ -70,8 +70,8 @@ export const profile: Profile = {
       "Roles objetivo: XR Technical Lead, Software Engineer, Engineering Manager, XR Training Architect (Aviation).",
   },
   contact: {
-    email: "YOUR_EMAIL_HERE",
-    website: "YOUR_DOMAIN_HERE",
+    email: "c2developers@outlook.com",
+    website: "https://andrescasportafolio.vercel.app/",
     github: "https://github.com/YOUR_GITHUB",
     linkedin: "https://www.linkedin.com/in/YOUR_LINKEDIN",
   },

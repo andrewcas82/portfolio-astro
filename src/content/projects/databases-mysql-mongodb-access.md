@@ -2,6 +2,13 @@
 title: "Diseño y Desarrollo de Bases de Datos (MySQL, MongoDB, Access)"
 slug: "databases-mysql-mongodb-access"
 summary: "Diseño, estructuración y mantenimiento de bases de datos en entornos mixtos (relacional y NoSQL), con foco en trazabilidad, consultas y soporte a operaciones."
+
+links:
+  repo: "https://github.com/andrewcas82/portfolio-astro"
+  demo: "https://andrescasportafolio.vercel.app/projects/mobile-web-apps-flutter-python-js/"
+  docs: "https://andrescasportafolio.vercel.app/"
+# video: ""
+
 role: "Software Engineer"
 status: "completed"
 stack:
@@ -15,13 +22,9 @@ tags:
   - "SQL"
   - "NoSQL"
   - "Automation"
-startDate: "YYYY-MM"
-endDate: "YYYY-MM"
-links:
-  repo: ""
-  demo: ""
-  docs: ""
-  video: ""
+startDate: "2022-01"
+endDate: "2025-01"
+
 images:
   hero: "/images/projects/databases-mysql-mongodb-access/hero.jpg"
   gallery: []
