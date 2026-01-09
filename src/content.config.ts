@@ -4,7 +4,6 @@ const projects = defineCollection({
   type: "content",
   schema: z.object({
     title: z.string(),
-    slug: z.string(),
     summary: z.string(),
 
     // Opcionales (para no romper tus MD actuales si no los tienen)
