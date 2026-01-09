@@ -7,11 +7,10 @@ export async function getStaticPaths() {
   const projects = await getCollection("projects");
 
   return projects.map((p) => ({
-    // Prioridad: slug "oficial" del entry (estable)
-    // Fallback: si tú mantienes slug en frontmatter, también funciona.
-    params: { slug: p.slug ?? p.data.slug },
-    props: { project: p },
+  params: { slug: p.id },
+  props: { project: p },
   }));
+
 }
 
 const { project } = Astro.props;
@@ -31,28 +30,88 @@ const ogImage = project.data.images?.hero ?? undefined;
 const projectPath = `/projects/${slug}/`;
 const projectUrl = Astro.site ? new URL(projectPath, Astro.site).toString() : projectPath;
 
-// JSON-LD por proyecto
+// Helpers para decidir el tipo de schema automáticamente
+const norm = (v: string) => v.toLowerCase().trim();
+
+const stack = (project.data.stack ?? []).map(norm);
+const tags = (project.data.tags ?? []).map(norm);
+const keywords = [...stack, ...tags];
+
+// Señales claras de software/app
+const softwareSignals = new Set([
+  "software", "app", "application", "mobile", "web", "api",
+  "unity", "unreal", "openxr", "xr", "vr", "ar", "mr",
+  "flutter", "react", "next.js", "astro", "node",
+  "typescript", "javascript", "c#", "dotnet", ".net",
+  "python", "docker", "kubernetes",
+  "mysql", "mongodb", "database",
+]);
+
+// Señales de contenido / caso / documentación
+const contentSignals = new Set([
+  "case study", "research", "paper", "publication",
+  "article", "blog", "documentation", "docs",
+  "report", "analysis",
+]);
+
+const hasRepoOrDemo =
+  Boolean(project.data.links?.repo) ||
+  Boolean(project.data.links?.demo);
+
+const looksLikeSoftware =
+  hasRepoOrDemo ||
+  keywords.some((k) => softwareSignals.has(k)) ||
+  keywords.some(
+    (k) =>
+      k.includes("unity") ||
+      k.includes("flutter") ||
+      k.includes("openxr") ||
+      k.includes("xr")
+  );
+
+const looksLikeContent =
+  keywords.some((k) => contentSignals.has(k)) ||
+  keywords.some(
+    (k) =>
+      k.includes("case") ||
+      k.includes("report") ||
+      k.includes("documentation")
+  );
+
+// Decisión final del tipo
+const schemaType =
+  looksLikeSoftware && !looksLikeContent
+    ? "SoftwareApplication"
+    : "CreativeWork";
+
+// JSON-LD final
 const jsonLdSchema = {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
+  "@type": schemaType,
   name: project.data.title,
   description: project.data.summary,
   url: projectUrl,
-  applicationCategory: "DeveloperApplication",
-  operatingSystem: "Cross-platform",
-  keywords: [...(project.data.stack ?? []), ...(project.data.tags ?? [])],
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "USD",
-  },
+  keywords: [...new Set([...(project.data.stack ?? []), ...(project.data.tags ?? [])])],
   sameAs: [
     project.data.links?.repo,
     project.data.links?.demo,
     project.data.links?.docs,
     project.data.links?.video,
   ].filter(Boolean),
+
+  ...(schemaType === "SoftwareApplication"
+    ? {
+        applicationCategory: "DeveloperApplication",
+        operatingSystem: "Cross-platform",
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "USD",
+        },
+      }
+    : {}),
 };
+
 ---
 
 <BaseLayout title={title} description={description} ogImage={ogImage}>
