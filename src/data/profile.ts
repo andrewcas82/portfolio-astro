@@ -72,7 +72,7 @@ export const profile: Profile = {
   contact: {
     email: "c2developers@outlook.com",
     website: "https://andrescasportafolio.vercel.app/",
-    github: "https://github.com/YOUR_GITHUB",
+    github: "https://github.com/andrewcas82",
     linkedin: "https://www.linkedin.com/in/YOUR_LINKEDIN",
   },
   highlights: [
