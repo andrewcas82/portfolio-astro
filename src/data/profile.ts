@@ -56,8 +56,8 @@ export const profile: Profile = {
   education: [
     {
       name: "MBI & MBA (Master’s Degree)",
-      status: "In progress",
-      notes: "Completion expected 2025",
+      status: "Completed",
+      notes: "2025",
     },
   ],
   certifications: [

@@ -1,0 +1,104 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+import JsonLd from "../components/seo/JsonLd.astro";
+import profile from "../data/profile";
+
+const title = `Contact — ${profile.fullName}`;
+const description = `Contact ${profile.fullName}. Email and professional links.`;
+
+const contactUrl = profile.contact.website || undefined;
+
+const contactSchema = {
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  name: title,
+  description,
+  url: contactUrl ? new URL("/contact/", contactUrl).toString() : undefined,
+  about: {
+    "@type": "Person",
+    name: profile.fullName,
+  },
+};
+---
+
+<BaseLayout title={title} description={description}>
+  <JsonLd schema={contactSchema} />
+
+  <article class="contact">
+    <header class="hero">
+      <h1>Contact</h1>
+      <p class="lead">
+        Use the channels below. I typically respond within 24–48 hours.
+      </p>
+    </header>
+
+    <section class="panel" aria-label="Contact methods">
+      <ul class="list" role="list">
+        {profile.contact.email && profile.contact.email !== "YOUR_EMAIL_HERE" ? (
+          <li class="item">
+            <span class="label">Email</span>
+            <a class="value" href={`mailto:${profile.contact.email}`}>
+              {profile.contact.email}
+            </a>
+          </li>
+        ) : null}
+
+        {profile.contact.github ? (
+          <li class="item">
+            <span class="label">GitHub</span>
+            <a class="value" href={profile.contact.github} target="_blank" rel="noreferrer">
+              {profile.contact.github.replace("https://", "")}
+            </a>
+          </li>
+        ) : null}
+
+        {profile.contact.linkedin ? (
+          <li class="item">
+            <span class="label">LinkedIn</span>
+            <a class="value" href={profile.contact.linkedin} target="_blank" rel="noreferrer">
+              {profile.contact.linkedin.replace("https://", "")}
+            </a>
+          </li>
+        ) : null}
+
+        {profile.contact.website && profile.contact.website !== "YOUR_DOMAIN_HERE" ? (
+          <li class="item">
+            <span class="label">Website</span>
+            <a class="value" href={profile.contact.website} target="_blank" rel="noreferrer">
+              {profile.contact.website.replace("https://", "")}
+            </a>
+          </li>
+        ) : null}
+      </ul>
+    </section>
+
+    <section class="note" aria-label="Notes">
+      <h2>Notes</h2>
+      <ul>
+        <li>For XR roles, include target platform (Quest/PCVR), scope, and timeline.</li>
+        <li>For software roles, include stack, responsibilities, and location/timezone expectations.</li>
+      </ul>
+    </section>
+  </article>
+
+  <style>
+    .contact { display: grid; gap: 18px; }
+    .hero h1 { margin: 0; font-size: 32px; letter-spacing: -0.02em; }
+    .lead { margin: 6px 0 0; opacity: 0.9; max-width: 80ch; }
+
+    .panel {
+      border: 1px solid rgba(0,0,0,0.10);
+      border-radius: 16px;
+      padding: 12px;
+    }
+
+    .list { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+    .item { display: grid; grid-template-columns: 90px 1fr; gap: 10px; align-items: baseline; }
+    .label { font-size: 12px; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.06em; }
+    .value { text-decoration: none; border-bottom: 1px solid rgba(0,0,0,0.18); }
+    .value:hover { border-bottom-color: rgba(0,0,0,0.45); }
+
+    .note h2 { margin: 0 0 8px; font-size: 16px; opacity: 0.85; }
+    .note ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+  </style>
+</BaseLayout>
