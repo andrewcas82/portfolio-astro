@@ -1,27 +1,40 @@
 ---
-/**
- * Header global del sitio.
- * - Navegación principal
- * - Marca (nombre)
- * - Links sociales (opcional)
- *
- * Asume que existen:
- * - src/data/navigation.ts
- * - src/data/socials.ts
- *
- * Si aún no existen, más abajo te dejo un fallback seguro.
- */
-
 import navigation from "../../data/navigation";
+import { getRelativeLocaleUrl } from "astro:i18n";
+import { UI, getLocaleFromAstro } from "../../i18n/ui";
 import socials from "../../data/socials";
 
-// Accesibilidad: permite resaltar el link activo
-const currentPath = Astro.url.pathname;
+const locale = getLocaleFromAstro(Astro.currentLocale);
 
-function isActive(href: string) {
-  if (href === "/") return currentPath === "/";
-  return currentPath.startsWith(href);
-}
+const pathname = Astro.url.pathname;
+const basePath =
+  locale === "es" && pathname.startsWith("/es/")
+    ? pathname.slice(3)
+    : locale === "es" && pathname === "/es"
+      ? "/"
+      : pathname;
+
+const safeLocaleRoot = (l: string) => getRelativeLocaleUrl(l) || "/";
+
+const urlFor = (l: "en" | "es", path: string) => {
+  const clean = path === "/" ? undefined : path.replace(/^\//, "");
+  const candidate = getRelativeLocaleUrl(l, clean);
+  return candidate || "/";
+};
+
+const navLocalized = navigation.map((item) => {
+  const href = item.href === "/" ? safeLocaleRoot(locale) : urlFor(locale, item.href);
+  const label = UI[locale].nav[item.key];
+  return { href, label };
+});
+
+const switchTo = locale === "es" ? "en" : "es";
+const switchHref = basePath === "/" ? safeLocaleRoot(switchTo) : urlFor(switchTo, basePath);
+
+const isActive = (href: string) => {
+  const norm = (s: string) => (s.endsWith("/") && s !== "/" ? s.slice(0, -1) : s);
+  return norm(Astro.url.pathname) === norm(href);
+};
 ---
 
 <header class="site-header" role="banner">
@@ -33,20 +46,23 @@ function isActive(href: string) {
     </a>
 
     <!-- Navegación -->
-    <nav class="nav" aria-label="Primary navigation">
-      <ul class="nav-list" role="list">
-        {navigation.map((item) => (
-          <li>
-            <a
-              class:list={["nav-link", isActive(item.href) && "active"]}
-              href={item.href}
-            >
-              {item.label}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
+<nav class="nav" aria-label="Primary navigation">
+  <ul class="nav-list" role="list">
+    {navLocalized.map((item) => (
+      <li>
+        <a class:list={["nav-link", isActive(item.href) && "active"]} href={item.href}>
+          {item.label}
+        </a>
+      </li>
+    ))}
+
+    <li class="lang">
+      <a class="nav-link" href={switchHref} aria-label="Switch language">
+        {switchTo === "es" ? "ES" : "EN"}
+      </a>
+    </li>
+  </ul>
+</nav>
 
     <!-- Socials (opcional) -->
     <div class="socials" aria-label="Social links">

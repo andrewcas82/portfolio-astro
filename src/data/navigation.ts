@@ -1,8 +1,12 @@
-const navigation = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Projects", href: "/projects" },
-  { label: "Contact", href: "/contact" },
+// src/data/navigation.ts
+export type NavItem = { key: "home" | "projects" | "about" | "contact"; href: string };
+
+const navigation: NavItem[] = [
+  { key: "home", href: "/" },
+  { key: "projects", href: "/projects/" },
+  { key: "about", href: "/about/" },
+  { key: "contact", href: "/contact/" },
 ];
 
 export default navigation;
+

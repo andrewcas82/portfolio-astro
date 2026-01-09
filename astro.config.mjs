@@ -5,7 +5,14 @@ import sitemap from "@astrojs/sitemap";
 // https://astro.build/config
 export default defineConfig({
     site: "https://andrescasportafolio.vercel.app",
-    integrations: [
-        sitemap()
-    ],
+    trailingSlash: "always",
+  i18n: {
+    locales: ["en", "es"],
+    defaultLocale: "en",
+    routing: {
+      prefixDefaultLocale: false
+    }
+  },
+
+  integrations: [sitemap()],
 });
