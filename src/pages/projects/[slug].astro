@@ -1,13 +1,15 @@
 ---
 import BaseLayout from "../../components/layout/BaseLayout.astro";
-import { getCollection } from "astro:content";
 import JsonLd from "../../components/seo/JsonLd.astro";
-
+import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
+
   return projects.map((p) => ({
-    params: { slug: p.slug },
+    // Prioridad: slug "oficial" del entry (estable)
+    // Fallback: si tú mantienes slug en frontmatter, también funciona.
+    params: { slug: p.slug ?? p.data.slug },
     props: { project: p },
   }));
 }
@@ -15,14 +17,21 @@ export async function getStaticPaths() {
 const { project } = Astro.props;
 const { Content } = await project.render();
 
+// slug final para URLs (viene del parámetro de ruta)
+const slug = Astro.params.slug;
+
 // SEO
 const title = `${project.data.title} — Project`;
 const description = project.data.summary;
-const projectUrl = new URL(
-  `/projects/${project.slug}/`,
-  Astro.site
-).toString();
 
+// OG image (opcional)
+const ogImage = project.data.images?.hero ?? undefined;
+
+// URL canónica para schema.org (robusta con fallback)
+const projectPath = `/projects/${slug}/`;
+const projectUrl = Astro.site ? new URL(projectPath, Astro.site).toString() : projectPath;
+
+// JSON-LD por proyecto
 const jsonLdSchema = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -31,10 +40,7 @@ const jsonLdSchema = {
   url: projectUrl,
   applicationCategory: "DeveloperApplication",
   operatingSystem: "Cross-platform",
-  keywords: [
-    ...(project.data.stack ?? []),
-    ...(project.data.tags ?? []),
-  ],
+  keywords: [...(project.data.stack ?? []), ...(project.data.tags ?? [])],
   offers: {
     "@type": "Offer",
     price: "0",
@@ -47,14 +53,11 @@ const jsonLdSchema = {
     project.data.links?.video,
   ].filter(Boolean),
 };
-
-
-// Hero image (opcional): usa frontmatter images.hero si existe
-const ogImage = project.data.images?.hero ?? undefined;
 ---
 
 <BaseLayout title={title} description={description} ogImage={ogImage}>
   <JsonLd schema={jsonLdSchema} />
+
   <article class="project">
     <header class="header">
       <div class="top">
@@ -221,7 +224,6 @@ const ogImage = project.data.images?.hero ?? undefined;
 
     .divider { border: none; border-top: 1px solid rgba(0,0,0,0.08); margin: 4px 0 0; }
 
-    /* Markdown content defaults */
     .content :global(h2) { margin: 18px 0 8px; font-size: 18px; }
     .content :global(h3) { margin: 16px 0 8px; font-size: 16px; }
     .content :global(p) { margin: 10px 0; max-width: 80ch; }
