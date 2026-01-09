@@ -1,6 +1,6 @@
 ---
 title: "XR Training APK (Unity C# + Vuforia)"
-slug: "xr-training-apk-unity-vuforia"
+slug: "xr-training-apk-unity"
 summary: "Aplicación XR orientada a entrenamiento con Unity (C#) y Vuforia (opcional), enfocada en arquitectura modular y estabilidad para dispositivos tipo Quest."
 
 links:
@@ -28,7 +28,7 @@ startDate: "2022-01"
 endDate: "2025-01"
 
 images:
-  hero: "/images/projects/xr-training-apk-unity-vuforia/hero.jpg"
+  hero: "/images/projects/xr-training-apk-unity/hero.jpg"
   gallery: []
 highlights:
   - "Arquitectura modular desacoplada (input vs movimiento)."
