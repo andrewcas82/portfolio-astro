@@ -1,0 +1,173 @@
+---
+import BaseLayout from "../components/layout/BaseLayout.astro";
+import JsonLd from "../components/seo/JsonLd.astro";
+import profile from "../data/profile";
+
+const title = `About — ${profile.fullName}`;
+const description = profile.summary;
+
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: profile.fullName,
+  jobTitle: profile.headline,
+  url: profile.contact.website || undefined,
+  sameAs: [profile.contact.github, profile.contact.linkedin].filter(Boolean),
+  email:
+    profile.contact.email && profile.contact.email !== "YOUR_EMAIL_HERE"
+      ? `mailto:${profile.contact.email}`
+      : undefined,
+};
+---
+
+<BaseLayout title={title} description={description}>
+  <JsonLd schema={personSchema} />
+
+  <article class="about">
+    <header class="hero">
+      <h1 class="name">{profile.fullName}</h1>
+      <p class="headline">{profile.headline}</p>
+
+      {profile.location ? <p class="meta">{profile.location}</p> : null}
+
+      <div class="cta">
+        {profile.contact.github ? (
+          <a class="btn" href={profile.contact.github} target="_blank" rel="noreferrer">GitHub</a>
+        ) : null}
+        {profile.contact.linkedin ? (
+          <a class="btn" href={profile.contact.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+        ) : null}
+        {profile.contact.email && profile.contact.email !== "YOUR_EMAIL_HERE" ? (
+          <a class="btn" href={`mailto:${profile.contact.email}`}>Email</a>
+        ) : null}
+      </div>
+    </header>
+
+    <section class="section">
+      <h2>Summary</h2>
+      <p>{profile.summary}</p>
+    </section>
+
+    {profile.valueProposition?.length ? (
+      <section class="section">
+        <h2>Value Proposition</h2>
+        <ul>
+          {profile.valueProposition.map((item) => (
+            <li>{item}</li>
+          ))}
+        </ul>
+      </section>
+    ) : null}
+
+    {profile.focusAreas?.length ? (
+      <section class="section">
+        <h2>Focus Areas</h2>
+        <ul class="chips" role="list">
+          {profile.focusAreas.map((a) => (
+            <li class="chip">{a}</li>
+          ))}
+        </ul>
+      </section>
+    ) : null}
+
+    {profile.highlights?.length ? (
+      <section class="section">
+        <h2>Highlights</h2>
+        <div class="cards">
+          {profile.highlights.map((h) => (
+            <section class="card" aria-label={h.label}>
+              <h3>{h.label}</h3>
+              <ul>
+                {h.items.map((x) => (
+                  <li>{x}</li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      </section>
+    ) : null}
+
+    {profile.education?.length ? (
+      <section class="section">
+        <h2>Education</h2>
+        <ul>
+          {profile.education.map((e) => (
+            <li>
+              <strong>{e.name}</strong>
+              {e.status ? ` — ${e.status}` : ""}
+              {e.notes ? <span class="muted"> ({e.notes})</span> : null}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ) : null}
+
+    {profile.languages?.length ? (
+      <section class="section">
+        <h2>Languages</h2>
+        <ul class="langs">
+          {profile.languages.map((l) => (
+            <li>
+              <strong>{l.name}</strong>
+              {l.level ? <span class="muted"> — {l.level}</span> : null}
+            </li>
+          ))}
+        </ul>
+      </section>
+    ) : null}
+
+    {profile.availability?.type || profile.availability?.notes ? (
+      <section class="section">
+        <h2>Availability</h2>
+        <p>
+          <strong>{profile.availability?.type ?? ""}</strong>
+          {profile.availability?.notes ? <span class="muted"> — {profile.availability.notes}</span> : null}
+        </p>
+      </section>
+    ) : null}
+  </article>
+
+  <style>
+    .about { display: grid; gap: 22px; }
+    .hero { display: grid; gap: 8px; }
+    .name { margin: 0; font-size: 34px; letter-spacing: -0.02em; line-height: 1.1; }
+    .headline { margin: 0; opacity: 0.9; max-width: 80ch; }
+    .meta { margin: 0; opacity: 0.75; font-size: 14px; }
+
+    .cta { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 6px; }
+    .btn {
+      text-decoration: none;
+      padding: 8px 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.12);
+      opacity: 0.9;
+    }
+    .btn:hover { opacity: 1; }
+
+    .section { display: grid; gap: 8px; }
+    .section h2 { margin: 0; font-size: 16px; opacity: 0.85; }
+    .section p { margin: 0; max-width: 85ch; }
+
+    .chips { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.10);
+      opacity: 0.9;
+    }
+
+    .cards { display: grid; gap: 12px; }
+    .card {
+      border: 1px solid rgba(0,0,0,0.10);
+      border-radius: 16px;
+      padding: 12px;
+    }
+    .card h3 { margin: 0 0 8px; font-size: 14px; opacity: 0.85; }
+    .card ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+
+    .langs { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+    .muted { opacity: 0.75; }
+  </style>
+</BaseLayout>
