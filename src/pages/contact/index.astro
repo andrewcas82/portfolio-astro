@@ -3,8 +3,8 @@ import BaseLayout from "../../components/layout/BaseLayout.astro";
 import JsonLd from "../../components/seo/JsonLd.astro";
 import profile from "../../data/profile";
 
-const title = `Contacto — ${profile.fullName}`;
-const description = `Contacta a ${profile.fullName}. Email y enlaces profesionales.`;
+const title = `Contact — ${profile.fullName}`;
+const description = `Contact ${profile.fullName}. Email and professional links.`;
 
 const contactUrl = profile.contact.website || undefined;
 
@@ -13,7 +13,7 @@ const contactSchema = {
   "@type": "ContactPage",
   name: title,
   description,
-  url: contactUrl ? new URL("/es/contact/", contactUrl).toString() : undefined,
+  url: contactUrl ? new URL("/contact/", contactUrl).toString() : undefined,
   about: {
     "@type": "Person",
     name: profile.fullName,
@@ -26,13 +26,13 @@ const contactSchema = {
 
   <article class="contact">
     <header class="hero">
-      <h1>Contacto</h1>
+      <h1>Contact</h1>
       <p class="lead">
-        Usa los canales abajo. Normalmente respondo en 24–48 horas.
+        Use the channels below. I typically respond within 24–48 hours.
       </p>
     </header>
 
-    <section class="panel" aria-label="Métodos de contacto">
+    <section class="panel" aria-label="Contact methods">
       <ul class="list" role="list">
         {profile.contact.email && profile.contact.email !== "YOUR_EMAIL_HERE" ? (
           <li class="item">
@@ -63,7 +63,7 @@ const contactSchema = {
 
         {profile.contact.website && profile.contact.website !== "YOUR_DOMAIN_HERE" ? (
           <li class="item">
-            <span class="label">Sitio</span>
+            <span class="label">Website</span>
             <a class="value" href={profile.contact.website} target="_blank" rel="noreferrer">
               {profile.contact.website.replace("https://", "")}
             </a>
@@ -72,11 +72,11 @@ const contactSchema = {
       </ul>
     </section>
 
-    <section class="note" aria-label="Notas">
-      <h2>Notas</h2>
+    <section class="note" aria-label="Notes">
+      <h2>Notes</h2>
       <ul>
-        <li>Para roles XR, incluye plataforma (Quest/PCVR), alcance y timeline.</li>
-        <li>Para roles de software, incluye stack, responsabilidades y expectativas de zona horaria.</li>
+        <li>For XR roles, include target platform (Quest/PCVR), scope, and timeline.</li>
+        <li>For software roles, include stack, responsibilities, and location/timezone expectations.</li>
       </ul>
     </section>
   </article>

@@ -1,83 +1,79 @@
 ---
 import navigation from "../../data/navigation";
-import { getRelativeLocaleUrl } from "astro:i18n";
-import { UI, getLocaleFromAstro } from "../../i18n/ui";
 import socials from "../../data/socials";
+import { UI, getLocaleFromAstro } from "../../i18n/ui";
 
-const locale = getLocaleFromAstro(Astro.currentLocale);
+const locale = getLocaleFromAstro(Astro.currentLocale) as "en" | "es";
+const base = locale === "es" ? "/es" : "";
 
-const pathname = Astro.url.pathname;
-const basePath =
-  locale === "es" && pathname.startsWith("/es/")
-    ? pathname.slice(3)
-    : locale === "es" && pathname === "/es"
-      ? "/"
-      : pathname;
+/** Siempre devuelve rutas absolutas con trailing slash (excepto raíz) */
+const abs = (path: string) => {
+  // normaliza path entrante
+  let p = path?.trim() || "/";
+  if (!p.startsWith("/")) p = `/${p}`;
+  if (p !== "/" && p.endsWith("/")) p = p.slice(0, -1); // quita slash final para controlar uno solo
 
-const safeLocaleRoot = (l: string) => getRelativeLocaleUrl(l) || "/";
-
-const urlFor = (l: "en" | "es", path: string) => {
-  const clean = path === "/" ? undefined : path.replace(/^\//, "");
-  const candidate = getRelativeLocaleUrl(l, clean);
-  return candidate || "/";
+  // compone con base (evita doble /es/es)
+  const full = p === "/" ? `${base}/` : `${base}${p}/`;
+  return full === "//" ? "/" : full;
 };
 
-const navLocalized = navigation.map((item) => {
-  const href = item.href === "/" ? safeLocaleRoot(locale) : urlFor(locale, item.href);
-  const label = UI[locale].nav[item.key];
-  return { href, label };
-});
-
-const switchTo = locale === "es" ? "en" : "es";
-const switchHref = basePath === "/" ? safeLocaleRoot(switchTo) : urlFor(switchTo, basePath);
-
-const isActive = (href: string) => {
-  const norm = (s: string) => (s.endsWith("/") && s !== "/" ? s.slice(0, -1) : s);
-  return norm(Astro.url.pathname) === norm(href);
+/** Quita /es del pathname actual para “switch” consistente */
+const stripEs = (p: string) => {
+  if (p === "/es" || p === "/es/") return "/";
+  return p.startsWith("/es/") ? `/${p.slice(4)}` : p;
 };
+
+const navLocalized = navigation.map((item) => ({
+  href: abs(item.href),
+  label: UI[locale].nav[item.key],
+}));
+
+const homeHref = abs("/");
+
+const switchTo: "en" | "es" = locale === "es" ? "en" : "es";
+const basePath = stripEs(Astro.url.pathname);
+
+// si estás en ES, al cambiar a EN quita /es; si estás en EN, al cambiar a ES agrega /es
+const switchHref =
+  switchTo === "es"
+    ? (basePath === "/" ? "/es/" : `/es${basePath.endsWith("/") ? basePath : `${basePath}/`}`)
+    : (basePath === "/" ? "/" : (basePath.endsWith("/") ? basePath : `${basePath}/`));
+
+const norm = (s: string) => (s !== "/" && s.endsWith("/") ? s.slice(0, -1) : s);
+const isActive = (href: string) => norm(Astro.url.pathname) === norm(href);
 ---
 
 <header class="site-header" role="banner">
   <div class="container">
-    <!-- Marca -->
-    <a class="brand" href="/" aria-label="Go to home">
+    <a class="brand" href={homeHref} aria-label="Go to home">
       <span class="brand-name">Andrés Castrillón</span>
       <span class="brand-subtitle">Software Engineer · XR Developer · Aviation Maintenance Engineer</span>
     </a>
 
-    <!-- Navegación -->
-<nav class="nav" aria-label="Primary navigation">
-  <ul class="nav-list" role="list">
-    {navLocalized.map((item) => (
-      <li>
-        <a class:list={["nav-link", isActive(item.href) && "active"]} href={item.href}>
-          {item.label}
-        </a>
-      </li>
-    ))}
+    <nav class="nav" aria-label="Primary navigation">
+      <ul class="nav-list" role="list">
+        {navLocalized.map((item) => (
+          <li>
+            <a class:list={["nav-link", isActive(item.href) && "active"]} href={item.href}>
+              {item.label}
+            </a>
+          </li>
+        ))}
+        <li class="lang">
+          <a class="nav-link" href={switchHref} aria-label="Switch language">
+            {switchTo === "es" ? "ES" : "EN"}
+          </a>
+        </li>
+      </ul>
+    </nav>
 
-    <li class="lang">
-      <a class="nav-link" href={switchHref} aria-label="Switch language">
-        {switchTo === "es" ? "ES" : "EN"}
-      </a>
-    </li>
-  </ul>
-</nav>
-
-    <!-- Socials (opcional) -->
     <div class="socials" aria-label="Social links">
       {socials?.length ? (
         <ul class="socials-list" role="list">
           {socials.map((s) => (
             <li>
-              <a
-                class="social-link"
-                href={s.href}
-                target="_blank"
-                rel="noreferrer"
-                aria-label={s.label}
-                title={s.label}
-              >
+              <a class="social-link" href={s.href} target="_blank" rel="noreferrer" aria-label={s.label} title={s.label}>
                 {s.label}
               </a>
             </li>
@@ -87,8 +83,10 @@ const isActive = (href: string) => {
     </div>
   </div>
 </header>
-
 <style>
+
+
+/* tu CSS aquí */
   /* Layout */
   .site-header {
     position: sticky;
