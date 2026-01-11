@@ -1,12 +1,7 @@
 ---
 /**
  * BaseLayout.astro
- * Layout global: SEO básico + Header/Footer + contenedor + slot principal.
- *
- * Uso:
- * <BaseLayout title="..." description="...">
- *   ...contenido...
- * </BaseLayout>
+ * Layout global: SEO (canonical + hreflang) + Header/Footer + contenedor + slot principal.
  */
 
 import Header from "./Header.astro";
@@ -15,9 +10,12 @@ import Footer from "./Footer.astro";
 type Props = {
   title: string;
   description?: string;
-  canonical?: string;
-  ogImage?: string;
+  canonical?: string; // opcional: override completo o relativo
+  ogImage?: string;   // opcional: ruta absoluta o relativa
   noindex?: boolean;
+
+  // i18n (opcional): si no se pasa, se infiere desde la ruta (/es/...)
+  locale?: "en" | "es";
 };
 
 const {
@@ -26,22 +24,36 @@ const {
   canonical,
   ogImage,
   noindex = false,
-} = Astro.props;
+  locale: localeProp,
+} = Astro.props as Props;
 
 // URL base del sitio (usa Astro.site si está configurado en astro.config.mjs)
 const siteUrl = Astro.site ? new URL(Astro.site) : new URL("http://localhost:4321");
 
-// Canonical final: si no te lo pasan, usa la URL actual
+// Locale: prop > inferido por pathname
+const pathname = Astro.url.pathname; // ej: /es/projects/ o /projects/
+const locale: "en" | "es" = localeProp ?? (pathname.startsWith("/es/") || pathname === "/es" ? "es" : "en");
+
+// Path sin prefijo de idioma (para alternates)
+const cleanPath = pathname.replace(/^\/es(?=\/|$)/, ""); // "/projects/" o "/"
+
+// URLs alternas por idioma (asumiendo simetría de rutas EN/ES)
+const enUrl = new URL(cleanPath || "/", siteUrl).toString();
+const esUrl = new URL(`/es${cleanPath || "/"}`, siteUrl).toString();
+
+// Canonical final:
+// - si te lo pasan, se respeta
+// - si no, se usa el canonical del idioma actual
 const canonicalUrl = canonical
   ? new URL(canonical, siteUrl).toString()
-  : new URL(Astro.url.pathname, siteUrl).toString();
+  : (locale === "es" ? esUrl : enUrl);
 
-// OG image final: opcional (ideal: /images/og/default.png)
+// OG image final: opcional (ideal: /images/og/default.jpg)
 const ogImageUrl = new URL(ogImage ?? "/images/og/default.jpg", siteUrl).toString();
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={locale}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -51,6 +63,11 @@ const ogImageUrl = new URL(ogImage ?? "/images/og/default.jpg", siteUrl).toStrin
     <link rel="canonical" href={canonicalUrl} />
 
     {noindex ? <meta name="robots" content="noindex, nofollow" /> : null}
+
+    <!-- i18n: hreflang alternates -->
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="es" href={esUrl} />
+    <link rel="alternate" hreflang="x-default" href={enUrl} />
 
     <!-- OpenGraph -->
     <meta property="og:type" content="website" />
@@ -110,7 +127,7 @@ const ogImageUrl = new URL(ogImage ?? "/images/og/default.jpg", siteUrl).toStrin
 
   <body>
     <div class="page">
-      <Header />
+      <Header locale={locale} />
 
       <main id="main-content">
         <div class="content">

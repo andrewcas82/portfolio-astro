@@ -6,24 +6,57 @@ import { UI, getLocaleFromAstro } from "../../i18n/ui";
 const locale = getLocaleFromAstro(Astro.currentLocale) as "en" | "es";
 const base = locale === "es" ? "/es" : "";
 
-/** Siempre devuelve rutas absolutas con trailing slash (excepto raíz) */
-const abs = (path: string) => {
-  // normaliza path entrante
-  let p = path?.trim() || "/";
-  if (!p.startsWith("/")) p = `/${p}`;
-  if (p !== "/" && p.endsWith("/")) p = p.slice(0, -1); // quita slash final para controlar uno solo
-
-  // compone con base (evita doble /es/es)
-  const full = p === "/" ? `${base}/` : `${base}${p}/`;
-  return full === "//" ? "/" : full;
+/**
+ * Normaliza un path a:
+ * - empieza por /
+ * - no tiene query/hash (si llegaran)
+ * - con trailing slash (excepto raíz)
+ */
+const ensureSlash = (p: string) => {
+  let path = (p ?? "/").trim();
+  if (!path) path = "/";
+  // elimina query/hash si vinieran
+  path = path.split("#")[0].split("?")[0];
+  if (!path.startsWith("/")) path = `/${path}`;
+  if (path !== "/" && !path.endsWith("/")) path = `${path}/`;
+  return path;
 };
 
-/** Quita /es del pathname actual para “switch” consistente */
-const stripEs = (p: string) => {
-  if (p === "/es" || p === "/es/") return "/";
-  return p.startsWith("/es/") ? `/${p.slice(4)}` : p;
+/**
+ * Construye href absoluto por locale:
+ * EN: /projects/
+ * ES: /es/projects/
+ * Evita /es/es/... si item.href ya viniera con /es
+ */
+const abs = (raw: string) => {
+  const path = ensureSlash(raw);
+
+  // Si ya viene con /es, primero “limpiamos” a path base EN
+  const clean = path === "/es/" ? "/" : path.replace(/^\/es\//, "/");
+
+  // Ahora aplicamos base del locale actual
+  if (base) {
+    return clean === "/" ? "/es/" : `/es${clean}`;
+  }
+  return clean;
 };
 
+/** Para el switch: devuelve el path EN equivalente (sin /es) */
+const toEnPath = (pathname: string) => {
+  const p = ensureSlash(pathname);
+  if (p === "/es/") return "/";
+  return p.replace(/^\/es\//, "/");
+};
+
+/** Para el switch: toma un path EN y lo convierte a ES */
+const toEsPath = (pathnameEn: string) => {
+  const p = ensureSlash(pathnameEn);
+  return p === "/" ? "/es/" : `/es${p}`;
+};
+
+const currentPath = ensureSlash(Astro.url.pathname);
+
+// nav locale-aware
 const navLocalized = navigation.map((item) => ({
   href: abs(item.href),
   label: UI[locale].nav[item.key],
@@ -31,17 +64,18 @@ const navLocalized = navigation.map((item) => ({
 
 const homeHref = abs("/");
 
+// switch locale conservando ruta
 const switchTo: "en" | "es" = locale === "es" ? "en" : "es";
-const basePath = stripEs(Astro.url.pathname);
 
-// si estás en ES, al cambiar a EN quita /es; si estás en EN, al cambiar a ES agrega /es
-const switchHref =
-  switchTo === "es"
-    ? (basePath === "/" ? "/es/" : `/es${basePath.endsWith("/") ? basePath : `${basePath}/`}`)
-    : (basePath === "/" ? "/" : (basePath.endsWith("/") ? basePath : `${basePath}/`));
+// Convertimos la ruta actual a “EN base”
+const enPath = toEnPath(currentPath);
 
-const norm = (s: string) => (s !== "/" && s.endsWith("/") ? s.slice(0, -1) : s);
-const isActive = (href: string) => norm(Astro.url.pathname) === norm(href);
+// Generamos href del idioma destino
+const switchHref = switchTo === "es" ? toEsPath(enPath) : enPath;
+
+/** Comparación active consistente con trailingSlash */
+const norm = (p: string) => ensureSlash(p); // ya deja todo uniforme
+const isActive = (href: string) => norm(currentPath) === norm(href);
 ---
 
 <header class="site-header" role="banner">
@@ -60,8 +94,9 @@ const isActive = (href: string) => norm(Astro.url.pathname) === norm(href);
             </a>
           </li>
         ))}
+
         <li class="lang">
-          <a class="nav-link" href={switchHref} aria-label="Switch language">
+          <a class="nav-link" href={switchHref} aria-label="Switch language" rel="alternate" hreflang={switchTo}>
             {switchTo === "es" ? "ES" : "EN"}
           </a>
         </li>
@@ -73,7 +108,14 @@ const isActive = (href: string) => norm(Astro.url.pathname) === norm(href);
         <ul class="socials-list" role="list">
           {socials.map((s) => (
             <li>
-              <a class="social-link" href={s.href} target="_blank" rel="noreferrer" aria-label={s.label} title={s.label}>
+              <a
+                class="social-link"
+                href={s.href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={s.label}
+                title={s.label}
+              >
                 {s.label}
               </a>
             </li>
@@ -83,10 +125,9 @@ const isActive = (href: string) => norm(Astro.url.pathname) === norm(href);
     </div>
   </div>
 </header>
+
 <style>
-
-
-/* tu CSS aquí */
+  /* tu CSS aquí */
   /* Layout */
   .site-header {
     position: sticky;

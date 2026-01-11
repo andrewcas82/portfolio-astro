@@ -3,8 +3,8 @@ import BaseLayout from "../../../components/layout/BaseLayout.astro";
 import JsonLd from "../../../components/seo/JsonLd.astro";
 import profile from "../../../data/profile";
 
-const title = `Contact — ${profile.fullName}`;
-const description = `Contact ${profile.fullName}. Email and professional links.`;
+const title = `Contacto — ${profile.fullName}`;
+const description = "Información de contacto y enlaces profesionales.";
 
 const contactUrl = profile.contact.website || undefined;
 
@@ -21,7 +21,8 @@ const contactSchema = {
 };
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} locale="es">
+
   <JsonLd schema={contactSchema} />
 
   <article class="contact">

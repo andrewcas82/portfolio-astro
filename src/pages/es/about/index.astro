@@ -3,8 +3,8 @@ import BaseLayout from "../../../components/layout/BaseLayout.astro";
 import JsonLd from "../../../components/seo/JsonLd.astro";
 import profile from "../../../data/profile";
 
-const title = `About — ${profile.fullName}`;
-const description = profile.summary;
+const title = `Sobre mi — ${profile.fullName}`;
+const description = "Perfil profesional, experiencia y habilidades.";
 
 const personSchema = {
   "@context": "https://schema.org",
@@ -20,7 +20,8 @@ const personSchema = {
 };
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} locale="es">
+
   <JsonLd schema={personSchema} />
 
   <article class="about">
