@@ -3,15 +3,30 @@ import BaseLayout from "../../components/layout/BaseLayout.astro";
 import JsonLd from "../../components/seo/JsonLd.astro";
 import { getCollection } from "astro:content";
 
+//const cleanSlug = (s: string) =>
+//  String(s ?? "").replace(/^en\//, "").replace(/^es\//, "").trim();
+
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
 
-  return projects.map((p) => ({
-  params: { slug: p.id },
-  props: { project: p },
-  }));
+  const enProjects = projects
+    .filter((p) => p.data.locale === "en")
+    .map((p) => {
+      const slug = String(p.slug ?? "")
+        .replace(/^en\//, "")
+        .replace(/^es\//, "")
+        .trim();
 
+      return { project: p, slug };
+    })
+    .filter((x) => x.slug.length > 0);
+
+  return enProjects.map(({ project, slug }) => ({
+    params: { slug },
+    props: { project },
+  }));
 }
+
 
 const { project } = Astro.props;
 const { Content } = await project.render();
@@ -111,7 +126,6 @@ const jsonLdSchema = {
       }
     : {}),
 };
-
 ---
 
 <BaseLayout title={title} description={description} ogImage={ogImage}>
@@ -211,7 +225,7 @@ const jsonLdSchema = {
     </section>
 
     <nav class="back">
-      <a href="/projects">← Back to Projects</a>
+      <a href="/projects/">← Back to Projects</a>
     </nav>
   </article>
 

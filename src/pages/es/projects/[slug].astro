@@ -3,16 +3,25 @@ import BaseLayout from "~/components/layout/BaseLayout.astro";
 import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
-  const entries = (await getCollection("projects")).filter((p) => p.data.locale === "es");
+  const entries = await getCollection("projects");
 
-  return entries.map((p) => ({
-    params: { slug: p.slug },
-    props: { entry: p },
+  const esEntries = entries
+    .filter((p) => p.data.locale === "es")
+    .map((p) => {
+      const slug = String(p.slug ?? "")
+        .replace(/^es\//, "")
+        .replace(/^en\//, "");
+      return { entry: p, slug };
+    })
+    .filter((x) => x.slug.length > 0);
+
+  return esEntries.map(({ entry, slug }) => ({
+    params: { slug },
+    props: { entry },
   }));
 }
 
 const { entry } = Astro.props;
-
 const { Content } = await entry.render();
 ---
 
@@ -20,7 +29,6 @@ const { Content } = await entry.render();
   <article>
     <h1>{entry.data.title}</h1>
     <p>{entry.data.summary}</p>
-
     <Content />
   </article>
 </BaseLayout>

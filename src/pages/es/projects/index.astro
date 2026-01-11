@@ -2,8 +2,15 @@
 import BaseLayout from "~/components/layout/BaseLayout.astro";
 import { getCollection } from "astro:content";
 
+const normalizeSlug = (s: string) => s.replace(/^es\//, "").replace(/^en\//, "");
+
 const projects = (await getCollection("projects"))
   .filter((p) => p.data.locale === "es")
+  .map((p) => ({
+    ...p,
+    cleanSlug: normalizeSlug(String(p.slug ?? "")),
+  }))
+  .filter((p) => p.cleanSlug.length > 0)
   .sort((a, b) => {
     const ad = a.data.startDate ? Date.parse(a.data.startDate) : 0;
     const bd = b.data.startDate ? Date.parse(b.data.startDate) : 0;
@@ -11,8 +18,6 @@ const projects = (await getCollection("projects"))
     return a.data.title.localeCompare(b.data.title);
   });
 ---
-
-
 
 <BaseLayout
   title="Projects — Andrés Castrillón"
@@ -31,7 +36,7 @@ const projects = (await getCollection("projects"))
         <article class="card" role="listitem">
           <div class="card-head">
             <h2 class="card-title">
-              <a class="card-link" href={`/es/projects/${p.slug}/`}>{p.data.title}</a>
+              <a class="card-link" href={`/es/projects/${p.cleanSlug}/`}>{p.data.title}</a>
             </h2>
 
             {p.data.status ? (
