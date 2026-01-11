@@ -1,6 +1,8 @@
 ---
+locale: es
+translationKey: databases-mysql-mongodb-access
+
 title: Diseno y Desarrollo de Bases de Datos (MySQL, MongoDB, Access)
-slug: databases-mysql-mongodb-access
 summary: Diseno, estructuracion y mantenimiento de bases de datos en entornos mixtos (relacional y NoSQL), con foco en trazabilidad, consultas y soporte a operaciones.
 
 links:

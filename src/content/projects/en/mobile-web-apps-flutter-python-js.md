@@ -1,7 +1,9 @@
 ---
-title: "Aplicaciones Web y Android (Flutter, Python, JavaScript)"
-slug: "mobile-web-apps-flutter-python-js"
-summary: "Desarrollo de aplicaciones web y móviles con Flutter/Dart y complementos con Python y JavaScript, incluyendo integración con APIs y arquitectura mantenible."
+locale: en
+translationKey: "mobile-web-apps-flutter-python-js"
+
+title: "Web and Android Applications (Flutter, Python, JavaScript)"
+summary: "Development of web and mobile applications with Flutter/Dart and plugins using Python and JavaScript, including API integration and maintainable architecture."
 
 links:
   repo: "https://github.com/andrewcas82/portfolio-astro"
@@ -28,10 +30,12 @@ endDate: "2025-01"
 images:
   hero: "/images/projects/mobile-web-apps-flutter-python-js/hero.jpg"
   gallery: []
+
 highlights:
-  - "Arquitectura de app y componentes UI reutilizables."
-  - "Integración con REST APIs y manejo de estados."
-  - "Automatización y scripts para soporte del ciclo de entrega."
+  - "App architecture and reusable UI components."
+  - "Integration with REST APIs and state management."
+  - "Automation and scripts to support the delivery lifecycle."
+
 ---
 
 ## Contexto

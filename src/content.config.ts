@@ -3,10 +3,13 @@ import { defineCollection, z } from "astro:content";
 const projects = defineCollection({
   type: "content",
   schema: z.object({
+    // i18n
+    locale: z.enum(["en", "es"]),
+    translationKey: z.string(),
+
     title: z.string(),
     summary: z.string(),
 
-    // Opcionales (para no romper tus MD actuales si no los tienen)
     role: z.string().optional(),
     stack: z.array(z.string()).default([]),
     highlights: z.array(z.string()).default([]),

@@ -1,6 +1,8 @@
 ---
+locale: es
+translationKey: "xr-training-apk-unity"
+
 title: "XR Training APK (Unity C# + Vuforia)"
-slug: "xr-training-apk-unity"
 summary: "Aplicación XR orientada a entrenamiento con Unity (C#) y Vuforia (opcional), enfocada en arquitectura modular y estabilidad para dispositivos tipo Quest."
 
 links:

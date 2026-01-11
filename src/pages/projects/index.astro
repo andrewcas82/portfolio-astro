@@ -1,17 +1,17 @@
 ---
-import BaseLayout from "../../components/layout/BaseLayout.astro";
+import BaseLayout from "~/components/layout/BaseLayout.astro";
 import { getCollection } from "astro:content";
 
-const projects = await getCollection("projects");
-
-// Orden básico: por startDate desc si existe, si no por title
-projects.sort((a, b) => {
-  const ad = a.data.startDate ? Date.parse(a.data.startDate) : 0;
-  const bd = b.data.startDate ? Date.parse(b.data.startDate) : 0;
-  if (bd !== ad) return bd - ad;
-  return a.data.title.localeCompare(b.data.title);
-});
+const projects = (await getCollection("projects"))
+  .filter((p) => p.data.locale === "en")
+  .sort((a, b) => {
+    const ad = a.data.startDate ? Date.parse(a.data.startDate) : 0;
+    const bd = b.data.startDate ? Date.parse(b.data.startDate) : 0;
+    if (bd !== ad) return bd - ad;
+    return a.data.title.localeCompare(b.data.title);
+  });
 ---
+
 
 <BaseLayout
   title="Projects — Andrés Castrillón"
@@ -30,7 +30,7 @@ projects.sort((a, b) => {
         <article class="card" role="listitem">
           <div class="card-head">
             <h2 class="card-title">
-              <a class="card-link" href={`/projects/${p.id}/`}>{p.data.title}</a>
+              <a class="card-link" href={`/projects/${p.slug}/`}>{p.data.title}</a>
             </h2>
 
             {p.data.status ? (
