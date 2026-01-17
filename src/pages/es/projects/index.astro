@@ -1,28 +1,42 @@
 ---
 import BaseLayout from "~/components/layout/BaseLayout.astro";
+import JsonLd from "~/components/seo/JsonLd.astro";
+import profile from "~/data/profile";
 import { getCollection } from "astro:content";
 
-const title = "Proyectos";
-const description = "Proyectos destacados";
+const projects = await getCollection("projects", ({ data }) => data.locale === "es");
 
-const normalizeSlug = (s: string) => s.replace(/^es\//, "").replace(/^en\//, "");
+const title = `Projects | ${profile.fullName}`;
+const description = "Featured projects";
 
-const projects = (await getCollection("projects"))
-  .filter((p) => p.data.locale === "es")
-  .map((p) => ({
-    ...p,
-    cleanSlug: normalizeSlug(String(p.slug ?? "")),
-  }))
-  .filter((p) => p.cleanSlug.length > 0)
-  .sort((a, b) => {
-    const ad = a.data.startDate ? Date.parse(a.data.startDate) : 0;
-    const bd = b.data.startDate ? Date.parse(b.data.startDate) : 0;
-    if (bd !== ad) return bd - ad;
-    return a.data.title.localeCompare(b.data.title);
-  });
+const clean = (s: unknown) => String(s ?? "").replace(/^es\//, "").replace(/^en\//, "").trim();
+
+
+const site = Astro.site ? new URL(Astro.site) : new URL("http://localhost:4321");
+
+const itemList = projects.map((p, i) => ({
+  "@type": "ListItem",
+  position: i + 1,
+  url: new URL(`/projects/${clean(p.slug)}/`, site).toString(),
+  name: p.data.title,
+}));
+
+const pageSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Projects",
+  description,
+  url: new URL("/projects/", site).toString(),
+  mainEntity: {
+    "@type": "ItemList",
+    itemListElement: itemList,
+  },
+};
 ---
 
+
 <BaseLayout title={title} description={description} locale="es">
+  <JsonLd schema={pageSchema} />
   <section class="page">
     <header class="page-header">
       <h1>Projects</h1>
@@ -36,7 +50,7 @@ const projects = (await getCollection("projects"))
         <article class="card" role="listitem">
           <div class="card-head">
             <h2 class="card-title">
-              <a class="card-link" href={`/es/projects/${p.cleanSlug}/`}>{p.data.title}</a>
+              <a class="card-link" href={`/es/projects/${clean(p.slug)}/`}>{p.data.title}</a>
             </h2>
 
             {p.data.status ? (

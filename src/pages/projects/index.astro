@@ -1,22 +1,46 @@
 ---
 import BaseLayout from "~/components/layout/BaseLayout.astro";
+import JsonLd from "~/components/seo/JsonLd.astro";
+import profile from "~/data/profile";
 import { getCollection } from "astro:content";
 
-const projects = (await getCollection("projects"))
-  .filter((p) => p.data.locale === "en")
-  .sort((a, b) => {
-    const ad = a.data.startDate ? Date.parse(a.data.startDate) : 0;
-    const bd = b.data.startDate ? Date.parse(b.data.startDate) : 0;
-    if (bd !== ad) return bd - ad;
-    return a.data.title.localeCompare(b.data.title);
-  });
+
+const projects = await getCollection("projects", ({ data }) => data.locale === "en");
+
+const title = `Projects | ${profile.fullName}`;
+const description = "Featured projects";
+
+function cleanSlug(s: unknown) {
+  return String(s ?? "").replace(/^en\//, "").replace(/^es\//, "").trim();
+}
+
+
+const site = Astro.site ? new URL(Astro.site) : new URL("http://localhost:4321");
+
+const itemList = projects.map((p, i) => ({
+  "@type": "ListItem",
+  position: i + 1,
+  url: new URL(`/projects/${cleanSlug(p.slug)}/`, site).toString(),
+  name: p.data.title,
+}));
+
+const pageSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: "Projects",
+  description,
+  url: new URL("/projects/", site).toString(),
+  mainEntity: {
+    "@type": "ItemList",
+    itemListElement: itemList,
+  },
+};
+
 ---
 
-
 <BaseLayout
-  title="Projects — Andrés Castrillón"
-  description="Selected software, XR, and aviation-related engineering projects with stack and outcomes."
->
+  title={title} description={description} locale="en">
+  <JsonLd schema={pageSchema} />
   <section class="page">
     <header class="page-header">
       <h1>Projects</h1>
@@ -30,7 +54,7 @@ const projects = (await getCollection("projects"))
         <article class="card" role="listitem">
           <div class="card-head">
             <h2 class="card-title">
-              <a class="card-link" href={`/projects/${p.slug}/`}>{p.data.title}</a>
+              <a class="card-link" href={`/projects/${cleanSlug(p.slug)}/`}>{p.data.title}</a>
             </h2>
 
             {p.data.status ? (

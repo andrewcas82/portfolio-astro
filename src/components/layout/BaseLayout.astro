@@ -13,6 +13,12 @@ type Props = {
   canonical?: string; // opcional: override completo o relativo
   ogImage?: string;   // opcional: ruta absoluta o relativa
   noindex?: boolean;
+  alternates?: {
+  en: string;
+  es: string;
+  xDefault?: string;
+};
+
 
   // i18n (opcional): si no se pasa, se infiere desde la ruta (/es/...)
   locale?: "en" | "es";
@@ -38,8 +44,12 @@ const locale: "en" | "es" = localeProp ?? (pathname.startsWith("/es/") || pathna
 const cleanPath = pathname.replace(/^\/es(?=\/|$)/, ""); // "/projects/" o "/"
 
 // URLs alternas por idioma (asumiendo simetría de rutas EN/ES)
-const enUrl = new URL(cleanPath || "/", siteUrl).toString();
-const esUrl = new URL(`/es${cleanPath || "/"}`, siteUrl).toString();
+const alternates = (Astro.props as Props).alternates;
+
+const enUrl = alternates?.en ?? new URL(cleanPath || "/", siteUrl).toString();
+const esUrl = alternates?.es ?? new URL(`/es${cleanPath || "/"}`, siteUrl).toString();
+const xDefaultUrl = alternates?.xDefault ?? enUrl;
+
 
 // Canonical final:
 // - si te lo pasan, se respeta
@@ -67,7 +77,8 @@ const ogImageUrl = new URL(ogImage ?? "/images/og/default.jpg", siteUrl).toStrin
     <!-- i18n: hreflang alternates -->
     <link rel="alternate" hreflang="en" href={enUrl} />
     <link rel="alternate" hreflang="es" href={esUrl} />
-    <link rel="alternate" hreflang="x-default" href={enUrl} />
+    <link rel="alternate" hreflang="x-default" href={xDefaultUrl} />
+
 
     <!-- OpenGraph -->
     <meta property="og:type" content="website" />

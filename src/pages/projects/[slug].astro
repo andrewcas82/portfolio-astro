@@ -238,12 +238,18 @@ const jsonLdSchema = {
       <Content />
     </section>
 
-    <nav class="back">
+    <nav class="back" aria-label="Project navigation">
       <a href="/projects/">← Back to Projects</a>
+
+      <!-- Opcional: enlace directo a la versión ES del mismo proyecto -->
+      <span class="sep" aria-hidden="true">·</span>
+      <a href={esUrl}>ES version</a>
     </nav>
+
   </article>
 
   <style>
+    .sep { opacity: 0.5; }
     .project { display: grid; gap: 16px; }
     .header { display: grid; gap: 12px; }
     .top { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
