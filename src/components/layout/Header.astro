@@ -130,126 +130,124 @@ const isActive = (href: string) => norm(currentPath) === norm(href);
   /* tu CSS aquí */
   /* Layout */
   .site-header {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    color: var(--text);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  }
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
 
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 14px 18px;
-    display: grid;
-    grid-template-columns: 1.2fr 1fr auto;
-    gap: 16px;
-    align-items: center;
-  }
+.site-header .container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
 
-  /* Marca */
-  .brand {
-    display: inline-flex;
+/* Brand block */
+.brand {
+  display: grid;
+  gap: 2px;
+  text-decoration: none;
+  min-width: 220px;
+}
+.brand-name {
+  color: var(--text);
+  font-weight: 700;
+  line-height: 1.1;
+}
+.brand-subtitle {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.25;
+}
+
+/* Nav layout (remove bullets + horizontal) */
+.nav {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Links */
+.nav-link {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.nav-link:hover {
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+}
+
+.nav-link.active {
+  color: var(--text);
+  background: rgba(88,166,255,0.12);
+  border-color: rgba(88,166,255,0.25);
+}
+
+.nav-link:focus-visible {
+  outline: 2px solid rgba(88,166,255,0.65);
+  outline-offset: 2px;
+}
+
+/* Socials on the right */
+.socials {
+  min-width: 140px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.socials-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-link {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+
+.social-link:hover {
+  background: rgba(255,255,255,0.04);
+  color: var(--text);
+}
+
+/* Responsive: stack neatly */
+@media (max-width: 860px) {
+  .site-header .container {
     flex-direction: column;
-    text-decoration: none;
-    color: inherit;
-    min-width: 0;
+    align-items: flex-start;
   }
 
-  .brand-name {
-    font-size: 16px;
-    font-weight: 700;
-    line-height: 1.2;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  .nav {
+    width: 100%;
+    justify-content: flex-start;
   }
 
-  .brand-subtitle {
-    font-size: 12px;
-    line-height: 1.2;
-    opacity: 0.75;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    margin-top: 4px;
-  }
-
-  /* Nav */
-  .nav-list {
-    display: flex;
-    gap: 14px;
-    justify-content: center;
-    align-items: center;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-  }
-
-  .nav-link {
-    display: inline-flex;
-    padding: 8px 10px;
-    text-decoration: none;
-    color: inherit;
-    border-radius: 8px;
-    font-size: 14px;
-    opacity: 0.85;
-  }
-
-  .nav-link:hover {
-    opacity: 1;
-    background: rgba(0, 0, 0, 0.04);
-  }
-
-  .nav-link.active {
-    opacity: 1;
-    font-weight: 600;
-    background: rgba(0, 0, 0, 0.06);
-  }
-
-  /* Socials */
-  .socials-list {
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-    align-items: center;
-    padding: 0;
-    margin: 0;
-    list-style: none;
-  }
-
-  .social-link {
-    display: inline-flex;
-    padding: 8px 10px;
-    text-decoration: none;
-    color: inherit;
-    border-radius: 8px;
-    font-size: 13px;
-    opacity: 0.85;
-  }
-
-  .social-link:hover {
-    opacity: 1;
-    background: rgba(0, 0, 0, 0.04);
-  }
-
-  /* Responsive */
-  @media (max-width: 860px) {
-    .container {
-      grid-template-columns: 1fr;
-      gap: 10px;
-    }
-
-    .nav-list {
-      justify-content: flex-start;
-      flex-wrap: wrap;
-    }
-
-    .socials-list {
-      justify-content: flex-start;
-      flex-wrap: wrap;
-    }
+  .socials {
+    width: 100%;
+    justify-content: flex-start;
   }
 </style>
