@@ -1,6 +1,12 @@
 ---
 import BaseLayout from "~/components/layout/BaseLayout.astro";
+import JsonLd from "~/components/seo/JsonLd.astro";
+import profile from "~/data/profile";
 import { getCollection } from "astro:content";
+
+function clean(s: unknown) {
+  return String(s ?? "").replace(/^en\//, "").replace(/^es\//, "").trim();
+}
 
 export async function getStaticPaths() {
   const entries = await getCollection("projects");
@@ -10,7 +16,9 @@ export async function getStaticPaths() {
     .map((p) => {
       const slug = String(p.slug ?? "")
         .replace(/^es\//, "")
-        .replace(/^en\//, "");
+        .replace(/^en\//, "")
+        .trim();
+
       return { entry: p, slug };
     })
     .filter((x) => x.slug.length > 0);
@@ -21,14 +29,286 @@ export async function getStaticPaths() {
   }));
 }
 
+
+
 const { entry } = Astro.props;
 const { Content } = await entry.render();
+
+const slug = Astro.params.slug;
+
+// Base URL
+const site = Astro.site ? new URL(Astro.site) : new URL("http://localhost:4321");
+
+// Alternates EN/ES por translationKey (robusto aunque cambien slugs)
+const siblings = await getCollection(
+  "projects",
+  ({ data }) => data.translationKey === entry.data.translationKey
+);
+
+const enEntry = siblings.find((p) => p.data.locale === "en");
+const esEntry = siblings.find((p) => p.data.locale === "es");
+
+const enSlug = enEntry ? clean(enEntry.slug) : String(slug ?? "");
+const esSlug = esEntry ? clean(esEntry.slug) : String(slug ?? "");
+
+const enUrl = new URL(`/projects/${enSlug}/`, site).toString();
+const esUrl = new URL(`/es/projects/${esSlug}/`, site).toString();
+
+// SEO
+const title = `${entry.data.title} | Proyectos | ${profile.fullName}`;
+const description = entry.data.summary;
+
+// OG image (opcional)
+const ogImage = entry.data.images?.hero;
+
+// Helpers para decidir schemaType (igual que EN)
+const norm = (v: string) => v.toLowerCase().trim();
+
+const stack = (entry.data.stack ?? []).map(norm);
+const tags = (entry.data.tags ?? []).map(norm);
+const keywords = [...stack, ...tags];
+
+const softwareSignals = new Set([
+  "software", "app", "application", "mobile", "web", "api",
+  "unity", "unreal", "openxr", "xr", "vr", "ar", "mr",
+  "flutter", "react", "next.js", "astro", "node",
+  "typescript", "javascript", "c#", "dotnet", ".net",
+  "python", "docker", "kubernetes",
+  "mysql", "mongodb", "database",
+]);
+
+const contentSignals = new Set([
+  "case study", "research", "paper", "publication",
+  "article", "blog", "documentation", "docs",
+  "report", "analysis",
+]);
+
+const hasRepoOrDemo =
+  Boolean(entry.data.links?.repo) ||
+  Boolean(entry.data.links?.demo);
+
+const looksLikeSoftware =
+  hasRepoOrDemo ||
+  keywords.some((k) => softwareSignals.has(k)) ||
+  keywords.some((k) => k.includes("unity") || k.includes("flutter") || k.includes("openxr") || k.includes("xr"));
+
+const looksLikeContent =
+  keywords.some((k) => contentSignals.has(k)) ||
+  keywords.some((k) => k.includes("case") || k.includes("report") || k.includes("documentation"));
+
+const schemaType =
+  looksLikeSoftware && !looksLikeContent
+    ? "SoftwareApplication"
+    : "CreativeWork";
+
+const jsonLdSchema = {
+  "@context": "https://schema.org",
+  "@type": schemaType,
+  name: entry.data.title,
+  description,
+  url: esUrl,
+  inLanguage: "es",
+  keywords: [...new Set([...(entry.data.stack ?? []), ...(entry.data.tags ?? [])])],
+  sameAs: [
+    entry.data.links?.repo,
+    entry.data.links?.demo,
+    entry.data.links?.docs,
+    entry.data.links?.video,
+  ].filter(Boolean),
+
+  ...(schemaType === "SoftwareApplication"
+    ? {
+        applicationCategory: "DeveloperApplication",
+        operatingSystem: "Cross-platform",
+        offers: {
+          "@type": "Offer",
+          price: "0",
+          priceCurrency: "USD",
+        },
+      }
+    : {}),
+};
 ---
 
-<BaseLayout title={entry.data.title} description={entry.data.summary} locale="es">
-  <article>
-    <h1>{entry.data.title}</h1>
-    <p>{entry.data.summary}</p>
-    <Content />
+<BaseLayout
+  title={title}
+  description={description}
+  locale="es"
+  canonical={esUrl}
+  alternates={{ en: enUrl, es: esUrl, xDefault: enUrl }}
+  ogImage={ogImage}
+>
+  <JsonLd schema={jsonLdSchema} />
+
+  <article class="project">
+    <header class="header">
+      <div class="top">
+        <h1 class="title">{entry.data.title}</h1>
+        {entry.data.status ? (
+          <span class="badge" aria-label={`Estado: ${entry.data.status}`}>{entry.data.status}</span>
+        ) : null}
+      </div>
+
+      <p class="summary">{entry.data.summary}</p>
+
+      {(entry.data.startDate || entry.data.endDate || entry.data.role) ? (
+        <dl class="meta" aria-label="Metadatos del proyecto">
+          {entry.data.role ? (
+            <>
+              <dt>Rol</dt>
+              <dd>{entry.data.role}</dd>
+            </>
+          ) : null}
+
+          {entry.data.startDate ? (
+            <>
+              <dt>Inicio</dt>
+              <dd>{entry.data.startDate}</dd>
+            </>
+          ) : null}
+
+          {entry.data.endDate ? (
+            <>
+              <dt>Fin</dt>
+              <dd>{entry.data.endDate}</dd>
+            </>
+          ) : null}
+        </dl>
+      ) : null}
+
+      {entry.data.stack?.length ? (
+        <section class="chips-block" aria-label="Tecnologías">
+          <h2 class="subhead">Stack</h2>
+          <ul class="chips" role="list">
+            {entry.data.stack.map((s) => (
+              <li class="chip">{s}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {entry.data.highlights?.length ? (
+        <section class="highlights" aria-label="Puntos clave">
+          <h2 class="subhead">Highlights</h2>
+          <ul class="bullets">
+            {entry.data.highlights.map((h) => (
+              <li>{h}</li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {entry.data.links ? (
+        <section class="links" aria-label="Enlaces del proyecto">
+          <h2 class="subhead">Links</h2>
+          <ul class="link-list" role="list">
+            {entry.data.links.repo ? (
+              <li><a href={entry.data.links.repo} target="_blank" rel="noreferrer">Repositorio</a></li>
+            ) : null}
+            {entry.data.links.demo ? (
+              <li><a href={entry.data.links.demo} target="_blank" rel="noreferrer">Demo</a></li>
+            ) : null}
+            {entry.data.links.docs ? (
+              <li><a href={entry.data.links.docs} target="_blank" rel="noreferrer">Docs</a></li>
+            ) : null}
+            {entry.data.links.video ? (
+              <li><a href={entry.data.links.video} target="_blank" rel="noreferrer">Video</a></li>
+            ) : null}
+          </ul>
+        </section>
+      ) : null}
+
+      {entry.data.tags?.length ? (
+        <p class="tags" aria-label="Tags">
+          {entry.data.tags.map((t) => (
+            <span class="tag">{t}</span>
+          ))}
+        </p>
+      ) : null}
+    </header>
+
+    <hr class="divider" />
+
+    <section class="content" aria-label="Contenido del proyecto">
+      <Content />
+    </section>
+
+    <nav class="back">
+      <a href="/es/projects/">← Volver a Proyectos</a>
+    </nav>
   </article>
+
+  <style>
+    .project { display: grid; gap: 16px; }
+    .header { display: grid; gap: 12px; }
+    .top { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
+    .title { margin: 0; font-size: 28px; letter-spacing: -0.02em; line-height: 1.15; }
+    .badge {
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.12);
+      opacity: 0.85;
+      white-space: nowrap;
+    }
+    .summary { margin: 0; opacity: 0.9; max-width: 80ch; }
+    .meta {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 6px 14px;
+      margin: 0;
+      max-width: 620px;
+      opacity: 0.9;
+      font-size: 14px;
+    }
+    .meta dt { font-weight: 700; }
+    .meta dd { margin: 0; }
+    .subhead { margin: 0 0 8px; font-size: 14px; opacity: 0.85; }
+    .chips-block { margin-top: 4px; }
+    .chips {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      font-size: 12px;
+      padding: 5px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,0,0,0.10);
+      opacity: 0.9;
+    }
+    .highlights { margin-top: 6px; }
+    .bullets { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+    .links .link-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .links a { text-decoration: none; border-bottom: 1px solid rgba(0,0,0,0.18); }
+    .links a:hover { border-bottom-color: rgba(0,0,0,0.45); }
+    .tags { margin: 0; display: flex; gap: 8px; flex-wrap: wrap; }
+    .tag { font-size: 12px; opacity: 0.75; }
+    .divider { border: none; border-top: 1px solid rgba(0,0,0,0.08); margin: 4px 0 0; }
+    .content :global(h2) { margin: 18px 0 8px; font-size: 18px; }
+    .content :global(h3) { margin: 16px 0 8px; font-size: 16px; }
+    .content :global(p) { margin: 10px 0; max-width: 80ch; }
+    .content :global(ul) { margin: 10px 0; padding-left: 18px; }
+    .content :global(code) { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+    .content :global(pre) {
+      overflow: auto;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(0,0,0,0.10);
+      background: rgba(0,0,0,0.03);
+    }
+    .back { margin-top: 6px; }
+    .back a { text-decoration: none; opacity: 0.85; }
+    .back a:hover { opacity: 1; text-decoration: underline; }
+  </style>
 </BaseLayout>

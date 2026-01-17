@@ -1,10 +1,12 @@
 ---
-import BaseLayout from "../../components/layout/BaseLayout.astro";
-import JsonLd from "../../components/seo/JsonLd.astro";
+import BaseLayout from "~/components/layout/BaseLayout.astro";
+import JsonLd from "~/components/seo/JsonLd.astro";
+import profile from "~/data/profile";
 import { getCollection } from "astro:content";
 
-//const cleanSlug = (s: string) =>
-//  String(s ?? "").replace(/^en\//, "").replace(/^es\//, "").trim();
+function clean(s: unknown) {
+  return String(s ?? "").replace(/^en\//, "").replace(/^es\//, "").trim();
+}
 
 export async function getStaticPaths() {
   const projects = await getCollection("projects");
@@ -28,26 +30,41 @@ export async function getStaticPaths() {
 }
 
 
+
+
 const { project } = Astro.props;
 const { Content } = await project.render();
 
 // slug final para URLs (viene del parámetro de ruta)
 const slug = Astro.params.slug;
 
+// Base URL
+const site = Astro.site ? new URL(Astro.site) : new URL("http://localhost:4321");
+
+// Canonical EN + alternates EN/ES por translationKey
+const siblings = await getCollection(
+  "projects",
+  ({ data }) => data.translationKey === project.data.translationKey
+);
+
+const enEntry = siblings.find((p) => p.data.locale === "en");
+const esEntry = siblings.find((p) => p.data.locale === "es");
+
+const enSlug = enEntry ? String(enEntry.slug ?? "").replace(/^en\//, "").replace(/^es\//, "").trim() : String(slug ?? "");
+const esSlug = esEntry ? String(esEntry.slug ?? "").replace(/^en\//, "").replace(/^es\//, "").trim() : String(slug ?? "");
+
+const enUrl = new URL(`/projects/${enSlug}/`, site).toString();
+const esUrl = new URL(`/es/projects/${esSlug}/`, site).toString();
+
 // SEO
-const title = `${project.data.title} — Project`;
+const title = `${project.data.title} | Projects | ${profile.fullName}`;
 const description = project.data.summary;
 
 // OG image (opcional)
-const ogImage = project.data.images?.hero ?? undefined;
-
-// URL canónica para schema.org (robusta con fallback)
-const projectPath = `/projects/${slug}/`;
-const projectUrl = Astro.site ? new URL(projectPath, Astro.site).toString() : projectPath;
+const ogImage = project.data.images?.hero;
 
 // Helpers para decidir el tipo de schema automáticamente
 const norm = (v: string) => v.toLowerCase().trim();
-
 const stack = (project.data.stack ?? []).map(norm);
 const tags = (project.data.tags ?? []).map(norm);
 const keywords = [...stack, ...tags];
@@ -76,22 +93,11 @@ const hasRepoOrDemo =
 const looksLikeSoftware =
   hasRepoOrDemo ||
   keywords.some((k) => softwareSignals.has(k)) ||
-  keywords.some(
-    (k) =>
-      k.includes("unity") ||
-      k.includes("flutter") ||
-      k.includes("openxr") ||
-      k.includes("xr")
-  );
+  keywords.some((k) => k.includes("unity") || k.includes("flutter") || k.includes("openxr") || k.includes("xr"));
 
 const looksLikeContent =
   keywords.some((k) => contentSignals.has(k)) ||
-  keywords.some(
-    (k) =>
-      k.includes("case") ||
-      k.includes("report") ||
-      k.includes("documentation")
-  );
+  keywords.some((k) => k.includes("case") || k.includes("report") || k.includes("documentation"));
 
 // Decisión final del tipo
 const schemaType =
@@ -104,8 +110,9 @@ const jsonLdSchema = {
   "@context": "https://schema.org",
   "@type": schemaType,
   name: project.data.title,
-  description: project.data.summary,
-  url: projectUrl,
+  description,
+  url: enUrl,
+  inLanguage: "en",
   keywords: [...new Set([...(project.data.stack ?? []), ...(project.data.tags ?? [])])],
   sameAs: [
     project.data.links?.repo,
@@ -128,7 +135,14 @@ const jsonLdSchema = {
 };
 ---
 
-<BaseLayout title={title} description={description} ogImage={ogImage}>
+<BaseLayout
+  title={title}
+  description={description}
+  locale="en"
+  canonical={enUrl}
+  alternates={{ en: enUrl, es: esUrl, xDefault: enUrl }}
+  ogImage={ogImage}
+>
   <JsonLd schema={jsonLdSchema} />
 
   <article class="project">
@@ -231,11 +245,9 @@ const jsonLdSchema = {
 
   <style>
     .project { display: grid; gap: 16px; }
-
     .header { display: grid; gap: 12px; }
     .top { display: flex; gap: 12px; align-items: flex-start; justify-content: space-between; }
     .title { margin: 0; font-size: 28px; letter-spacing: -0.02em; line-height: 1.15; }
-
     .badge {
       font-size: 12px;
       padding: 4px 8px;
@@ -244,9 +256,7 @@ const jsonLdSchema = {
       opacity: 0.85;
       white-space: nowrap;
     }
-
     .summary { margin: 0; opacity: 0.9; max-width: 80ch; }
-
     .meta {
       display: grid;
       grid-template-columns: 120px 1fr;
@@ -258,9 +268,7 @@ const jsonLdSchema = {
     }
     .meta dt { font-weight: 700; }
     .meta dd { margin: 0; }
-
     .subhead { margin: 0 0 8px; font-size: 14px; opacity: 0.85; }
-
     .chips-block { margin-top: 4px; }
     .chips {
       list-style: none;
@@ -277,10 +285,8 @@ const jsonLdSchema = {
       border: 1px solid rgba(0,0,0,0.10);
       opacity: 0.9;
     }
-
     .highlights { margin-top: 6px; }
     .bullets { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
-
     .links .link-list {
       list-style: none;
       padding: 0;
@@ -291,12 +297,9 @@ const jsonLdSchema = {
     }
     .links a { text-decoration: none; border-bottom: 1px solid rgba(0,0,0,0.18); }
     .links a:hover { border-bottom-color: rgba(0,0,0,0.45); }
-
     .tags { margin: 0; display: flex; gap: 8px; flex-wrap: wrap; }
     .tag { font-size: 12px; opacity: 0.75; }
-
     .divider { border: none; border-top: 1px solid rgba(0,0,0,0.08); margin: 4px 0 0; }
-
     .content :global(h2) { margin: 18px 0 8px; font-size: 18px; }
     .content :global(h3) { margin: 16px 0 8px; font-size: 16px; }
     .content :global(p) { margin: 10px 0; max-width: 80ch; }
@@ -309,7 +312,6 @@ const jsonLdSchema = {
       border: 1px solid rgba(0,0,0,0.10);
       background: rgba(0,0,0,0.03);
     }
-
     .back { margin-top: 6px; }
     .back a { text-decoration: none; opacity: 0.85; }
     .back a:hover { opacity: 1; text-decoration: underline; }
