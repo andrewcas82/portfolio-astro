@@ -40,7 +40,7 @@ export const profile: Profile = {
     { name: "English", level: "Professional working proficiency" }, // ajusta si deseas
   ],
   summary:
-    "Software engineer and XR developer with experience in Unity (XR Interaction Toolkit, OpenXR, Input System) and mobile development with Flutter, complemented by solid experience in aircraft maintenance, quality control, calibration, and safety-critical environments. Focused on building immersive training systems (VR/AR/MR) for aviation with modular architecture, technical documentation, and a focus on metrics.",
+    "Software engineer and XR engineer with experience in Unity (XR Interaction Toolkit, OpenXR, Input System) and mobile development with Flutter, complemented by solid experience in aircraft maintenance, quality control, calibration, and safety-critical environments. Focused on building immersive training systems (VR/AR/MR) for aviation with modular architecture, technical documentation, and a focus on metrics.",
   valueProposition: [
     "Bridge between aeronautical engineering (processes, traceability, safety) and XR development (Unity) for immersive training.",
     "Modular and maintainable architecture: SOLID, patterns, input and movement decoupling, testable components.",

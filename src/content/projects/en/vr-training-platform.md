@@ -3,7 +3,7 @@ locale: en
 translationKey: vr-training-platform
 
 title: VR Developer Platform
-summary: Immersive training platform for aviation maintenance.
+summary: Immersive training platform for aviation maintenance, delivering realistic simulations to improve technical accuracy, safety, and performance.
 stack: ["Unity", "XR Interaction Toolkit", "Quest 3"]
 highlights:
   - Multi-scene training flow
