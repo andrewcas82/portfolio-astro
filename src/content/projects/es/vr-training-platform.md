@@ -13,7 +13,8 @@ status: active
 links:
   repo: "https://github.com/..."
 images:
-  hero: "/assets/projects/vr-training-platform/hero.png"
+  hero: "/images/projects/vr-training-platform/hero.jpg"
+  gallery: []
 ---
 
 ## Descripción
