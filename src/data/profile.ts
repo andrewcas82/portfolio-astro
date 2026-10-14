@@ -25,52 +25,58 @@ export type Profile = {
 };
 
 export const profile: Profile = {
-  fullName: "Andres Castrillon",
+  fullName: "Andres Castrillon Montoya",
   headline:
-    "Software Engineer / XR Developer / Aviation Maintenance Engineer — MBI & MBA",
+    "Software Engineer | AI, Simulation & XR Development | Systems Integration",
   titles: [
     "Software Engineer",
-    "XR Developer (Unity / OpenXR / XRI)",
+    "AI & Systems Integration",
+    "XR Developer (VR/AR/MR)",
     "Aviation Maintenance Engineer",
-    "XR Training Architect (Aviation)",
   ],
-  location: "UAE (Asia/Dubai)",
+  location: "Abu Dhabi, UAE | Open to relocate to Medellin, Colombia",
   languages: [
     { name: "Spanish", level: "Native" },
-    { name: "English", level: "Professional working proficiency" }, // ajusta si deseas
+    { name: "English", level: "Advanced" },
   ],
   summary:
-    "Software engineer and XR engineer with experience in Unity (XR Interaction Toolkit, OpenXR, Input System) and mobile development with Flutter, complemented by solid experience in aircraft maintenance, quality control, calibration, and safety-critical environments. Focused on building immersive training systems (VR/AR/MR) for aviation with modular architecture, technical documentation, and a focus on metrics.",
+    "Software Engineer with a professional background in the aviation sector since 2013 and a focus on AI-assisted software development, immersive simulation, and systems integration. Currently developing VR and AI solutions for aviation training, including an AI-assisted air traffic control simulator integrated with Microsoft Flight Simulator and Meta Quest 3. Hands-on experience with RAG, LLM APIs, FastAPI, MongoDB, AI agents, and custom MCP integrations.",
   valueProposition: [
-    "Bridge between aeronautical engineering (processes, traceability, safety) and XR development (Unity) for immersive training.",
-    "Modular and maintainable architecture: SOLID, patterns, input and movement decoupling, testable components.",
-    "Results-oriented delivery: clear documentation, KPIs, risk management and continuous improvement.",
+    "Bridge between aviation operations (processes, safety) and cutting-edge technology (AI, XR, Simulation).",
+    "Modular architecture & integration: Python, FastAPI, REST APIs, MongoDB, and workflow automation (n8n, Docker).",
+    "AI-driven solutions: Implementation of RAG, LLM APIs, AI agents, and custom MCP integrations.",
   ],
   focusAreas: [
-    "XR Training Systems (VR/AR/MR) para aviación",
-    "Unity 6 + XR Interaction Toolkit + OpenXR",
-    "Flutter (Android/iOS) + Integración REST",
-    "Automatización y tooling (Git, Docker, scripts)",
-    "Data structuring y análisis (SQL, métricas, RCA)",
+    "AI Engineering (RAG, LLM APIs, AI Agents, OpenClaw, MCP)",
+    "Simulation & XR (Microsoft Flight Simulator, Meta Quest 3, VR Training)",
+    "Backend & Integration (Python, JavaScript, FastAPI, MongoDB)",
+    "Workflow Automation (n8n, Docker, Git)",
   ],
   education: [
     {
-      name: "MBI & MBA (Master’s Degree)",
+      name: "Master's Degree in International Management",
       status: "Completed",
-      notes: "2025",
+      notes: "Politecnico Grancolombiano (2025)",
+    },
+    {
+      name: "Software Engineer",
+      status: "Completed",
+      notes: "Politecnico Grancolombiano (2022)",
     },
   ],
   certifications: [
-    // Opcional. Completa si tienes certificaciones concretas.
-    // { name: "Certification Name", issuer: "Issuer", year: "2024" }
+    { name: "Business Continuity Management System", issuer: "GAL", year: "2026" },
+    { name: "Microsoft Copilot: The Art of Prompting", issuer: "LinkedIn Learning", year: "2026" },
+    { name: "Human Factors Refresher Training - EASA Part 145", issuer: "GAL / AMMROC", year: "2023" },
+    { name: "Initiating and Planning Projects", issuer: "University of California, Irvine - Coursera", year: "2022" },
   ],
   availability: {
-    type: "Open to opportunities",
+    type: "Open to international opportunities",
     notes:
-      "Roles objetivo: XR Technical Lead, Software Engineer, Engineering Manager, XR Training Architect (Aviation).",
+      "Target roles: Software Engineer, AI Engineer, XR Developer, Systems Integrator.",
   },
   contact: {
-    email: "c2developers@outlook.com",
+    email: "andrescastrillon82@hotmail.com",
     website: "https://andrescasportafolio.vercel.app/",
     github: "https://github.com/andrewcas82",
     linkedin: "https://www.linkedin.com/in/andres-castrillon-montoya-7a8bb8a5/",
@@ -79,19 +85,19 @@ export const profile: Profile = {
     {
       label: "Core Strengths",
       items: [
-        "Software Architecture & Modular Design (SOLID, Patterns, Clean Code)",
-        "Unity XR (XRI, OpenXR, Input System, Rig Architecture)",
-        "Flutter cross-platform apps (Android/iOS) + REST integrations",
-        "Aviation domain expertise (QC, calibration, compliance, traceability)",
-        "Leadership: KPIs, risk registers, mentoring, stakeholder communication",
+        "AI Engineering: RAG, LLM integration, AI agents, custom MCP servers, OpenAI/Gemini/Anthropic APIs.",
+        "Simulation & XR: MSFS, Meta Quest 3, VR/XR prototyping, aviation training simulation.",
+        "Backend & Integration: Python, JavaScript, FastAPI, REST APIs, MongoDB, system integration.",
+        "Infrastructure & Automation: Docker, Git, Kubernetes basics, n8n, local/offline application workflows.",
+        "Aviation Domain: Aircraft maintenance, quality control, calibration, and safety-critical environments.",
       ],
     },
     {
-      label: "Proof-oriented delivery",
+      label: "Selected Projects",
       items: [
-        "README-driven development y documentación técnica en Markdown",
-        "Diseño orientado a métricas (KPIs) y trazabilidad (entornos críticos)",
-        "Enfoque en performance y estabilidad (XR en Quest + PC workflows)",
+        "AI Lite ATC Simulation: AI-assisted air traffic control simulator integrated with MSFS for aviation training.",
+        "Immersive Aviation Training: VR/AR training concepts translated into technical prototypes using Meta Quest 3.",
+        "AI Agents & MCP Integrations: Configured OpenClaw skills, heartbeat workflows, and custom MCP connections for Blender.",
       ],
     },
   ],
