@@ -89,7 +89,11 @@ const isActive = (href: string) => norm(currentPath) === norm(href);
       <ul class="nav-list" role="list">
         {navLocalized.map((item) => (
           <li>
-            <a class:list={["nav-link", isActive(item.href) && "active"]} href={item.href}>
+            <a
+              class:list={["nav-link", isActive(item.href) && "active"]}
+              href={item.href}
+              aria-current={isActive(item.href) ? "page" : undefined}
+            >
               {item.label}
             </a>
           </li>
