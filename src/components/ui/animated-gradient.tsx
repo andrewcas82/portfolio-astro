@@ -443,7 +443,7 @@ function hslToRgb(h: number, s: number, l: number): [number, number, number] {
   return [r, g, b];
 }
 
-const FRAGMENT_SHADER = \`#version 300 es
+const FRAGMENT_SHADER = `#version 300 es
 precision highp float;
 
 uniform float u_time;
@@ -559,4 +559,4 @@ void main() {
 
     fragColor = vec4(color_mix.rgb, color_mix.a);
 }
-\`;
+`;
