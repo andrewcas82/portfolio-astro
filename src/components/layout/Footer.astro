@@ -10,11 +10,13 @@ const year = new Date().getFullYear();
 
 <style>
   .site-footer {
-    border-top: 1px solid rgba(0, 0, 0, 0.08);
-    padding: 18px 0;
-    background: var(--bg);
-    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    background: linear-gradient(to bottom, transparent, rgba(22, 27, 34, 0.4));
+    border-top: 1px solid rgba(48, 54, 61, 0.5);
     color: var(--muted);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    margin-top: 24px;
   }
 
   .container {
@@ -22,7 +24,10 @@ const year = new Date().getFullYear();
     margin: 0 auto;
     padding: 0 18px;
     font-size: 13px;
-    opacity: 0.8;
+    opacity: 0.6;
+    display: flex;
+    justify-content: center;
+    letter-spacing: 0.01em;
   }
 
   p {

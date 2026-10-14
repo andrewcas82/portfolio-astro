@@ -160,6 +160,18 @@ const ogImageUrl = new URL(ogImage ?? "/images/og/default.png", siteUrl).toStrin
         margin: 0 auto;
         padding: 34px 18px 46px;
       }
+      /* Focus Visible Styles (Option B) */
+      :focus-visible {
+        outline: 2px solid rgba(88,166,255,0.6);
+        outline-offset: 2px;
+        border-radius: 2px; /* Ensure a small radius for links by default */
+      }
+
+      /* Make sure we don't apply border-radius to components that already have it */
+      .btn:focus-visible, .card:focus-visible, .badge:focus-visible {
+        border-radius: inherit;
+      }
+
       /* Surfaces (cards) */
       .card {
         background: var(--surface);
