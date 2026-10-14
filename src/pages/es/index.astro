@@ -3,7 +3,6 @@ import BaseLayout from "~/components/layout/BaseLayout.astro";
 import Hero from "~/components/layout/sections/Hero.astro";
 import JsonLd from "~/components/seo/JsonLd.astro";
 import profile from "~/data/profile";
-import AnimatedGradientDemo from "~/components/ui/animated-gradient-demo";
 
 const title = `Proyectos | ${profile.fullName}`;
 const description = "Proyectos destacados";
@@ -23,9 +22,5 @@ const personSchema = {
   <JsonLd schema={personSchema} />
   <div class="flow">
     <Hero />
-
-    <div style="margin-top: 48px;">
-      <AnimatedGradientDemo client:load />
-    </div>
   </div>
 </BaseLayout>
