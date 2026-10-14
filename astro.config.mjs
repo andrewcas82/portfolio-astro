@@ -2,10 +2,14 @@
 import { defineConfig } from 'astro/config';
 import sitemap from "@astrojs/sitemap";
 
+import react from "@astrojs/react";
+import tailwindcss from "@tailwindcss/vite";
+
 // https://astro.build/config
 export default defineConfig({
-    site: "https://andrescasportafolio.vercel.app",
-    trailingSlash: "always",
+  site: "https://andrescasportafolio.vercel.app",
+  trailingSlash: "always",
+
   i18n: {
     locales: ["en", "es"],
     defaultLocale: "en",
@@ -14,5 +18,9 @@ export default defineConfig({
     }
   },
 
-  integrations: [sitemap()],
+  integrations: [sitemap(), react()],
+
+  vite: {
+    plugins: [tailwindcss()],
+  },
 });
