@@ -203,9 +203,10 @@ const isActive = (href: string) => norm(currentPath) === norm(href);
   border-color: rgba(88,166,255,0.25);
 }
 
-.nav-link:focus-visible {
+.nav-link:focus-visible, .social-link:focus-visible, .brand:focus-visible {
   outline: 2px solid rgba(88,166,255,0.65);
   outline-offset: 2px;
+  border-radius: 10px;
 }
 
 /* Socials on the right */
